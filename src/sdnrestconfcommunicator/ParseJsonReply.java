@@ -21,6 +21,31 @@ public class ParseJsonReply
         this.reply = reply;        
     }
     
+    protected String getFlows()
+    {
+        String[] flowsTable = null;
+        
+        try
+        {
+            JSONArray netFlows = reply.getJSONArray("flow-node-inventory:table");
+            JSONObject obj = netFlows.getJSONObject(0);
+            JSONArray flow = obj.getJSONArray("flow");
+            flowsTable = new String[flow.length()];
+            for (int i = 0; i < flow.length(); i++) 
+            {
+                JSONObject jsonobject = flow.getJSONObject(i);
+                flowsTable[i] = jsonobject.getString("id");
+                System.out.println(flowsTable[i]);
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        return flowsTable.toString();
+        
+    }
+    
     protected String getTopologyID()
     {
         String topologyId = "";
@@ -34,21 +59,10 @@ public class ParseJsonReply
         }
         catch(Exception e){
             e.printStackTrace();
+            return null;
         }
+        System.out.println(reply);
         return topologyId;
-    }
-    
-    protected JSONObject getFullControllerTopo()
-    {
-        JSONObject netTopo = null;
-        try
-        {
-            netTopo = reply.getJSONObject("network-topology");
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        return netTopo;
     }
     
     protected String[] getNodes()
@@ -59,11 +73,39 @@ public class ParseJsonReply
             JSONObject netTopo = reply.getJSONObject("network-topology");
             JSONArray topo = netTopo.getJSONArray("topology");
             JSONObject obj = topo.getJSONObject(0);
-            nodes[0] = obj.getString("node");
+            JSONArray node = obj.getJSONArray("node");
+            nodes = new String[node.length()];
+            for (int i = 0; i < node.length(); i++) 
+            {
+                JSONObject jsonobject = node.getJSONObject(i);
+                nodes[i] = jsonobject.getString("node-id");
+            }
         }
         catch(Exception e){
             e.printStackTrace();
         }
         return nodes;
+    }
+    
+    protected String[] getLinks()
+    {
+        String[] links = null;
+        try
+        {
+            JSONObject netTopo = reply.getJSONObject("network-topology");
+            JSONArray topo = netTopo.getJSONArray("topology");
+            JSONObject obj = topo.getJSONObject(0);
+            JSONArray link = obj.getJSONArray("link");
+            links = new String[link.length()];
+            for (int i = 0; i < link.length(); i++) 
+            {
+                JSONObject jsonobject = link.getJSONObject(i);
+                links[i] = jsonobject.getString("link-id");
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return links;
     }
 }
