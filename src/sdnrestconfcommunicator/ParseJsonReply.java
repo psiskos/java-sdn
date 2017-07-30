@@ -5,6 +5,8 @@
  */
 package sdnrestconfcommunicator;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -15,35 +17,66 @@ import org.codehaus.jettison.json.JSONObject;
 public class ParseJsonReply 
 {
     final private JSONObject reply;
+    JSONArray flow;
+    ArrayList<String> flowsValues;
     
     ParseJsonReply(JSONObject reply)
     {
         this.reply = reply;        
     }
     
-    protected String getFlows()
+    protected String[] getFlowsIDs()
     {
-        String[] flowsTable = null;
+        String[] flowsIdTable = null;
         
         try
         {
             JSONArray netFlows = reply.getJSONArray("flow-node-inventory:table");
             JSONObject obj = netFlows.getJSONObject(0);
-            JSONArray flow = obj.getJSONArray("flow");
-            flowsTable = new String[flow.length()];
+            flow = obj.getJSONArray("flow");
+            flowsIdTable = new String[flow.length()];
             for (int i = 0; i < flow.length(); i++) 
             {
+                //flow ids and flow values passed in String arrays
                 JSONObject jsonobject = flow.getJSONObject(i);
-                flowsTable[i] = jsonobject.getString("id");
-                System.out.println(flowsTable[i]);
+                flowsIdTable[i] = jsonobject.getString("id");
+                //System.out.println(flowsIdTable[i]);
             }
         }
         catch(Exception e){
             e.printStackTrace();
             return null;
         }
-        return flowsTable.toString();
+        return flowsIdTable;
         
+    }
+    
+    protected String[] getFlowsValues(String flowId)
+    {
+        flowsValues = new ArrayList<String>();
+        try
+        {
+            for (int i = 0; i < flow.length(); i++) 
+            {
+                //flow ids and flow values passed in String arrays
+                JSONObject jsonobject = flow.getJSONObject(i);
+                if(flowId.equals(jsonobject.getString("id")))
+                {
+                   for(Iterator it = jsonobject.keys(); it.hasNext(); ) 
+                    {
+                        String key = (String)it.next();
+                        flowsValues.add(key + ":" + jsonobject.getString(key));
+                        System.out.println(key + ":" + jsonobject.getString(key));
+                    }     
+                }                             
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+            return null;
+        }
+        //arraylist to string array
+        return flowsValues.toArray(new String[0]);
     }
     
     protected String getTopologyID()
