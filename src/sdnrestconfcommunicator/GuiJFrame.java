@@ -70,6 +70,7 @@ public class GuiJFrame extends javax.swing.JFrame
         flowsMenu = new javax.swing.JMenu();
         getFlowsMenuItm = new javax.swing.JMenuItem();
         dropFlowsMenuItm = new javax.swing.JMenuItem();
+        inspectFlowsMenuItm = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -164,6 +165,15 @@ public class GuiJFrame extends javax.swing.JFrame
         });
         flowsMenu.add(dropFlowsMenuItm);
 
+        inspectFlowsMenuItm.setText("Inspect Flow");
+        inspectFlowsMenuItm.setEnabled(false);
+        inspectFlowsMenuItm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inspectFlowsMenuItmActionPerformed(evt);
+            }
+        });
+        flowsMenu.add(inspectFlowsMenuItm);
+
         jMenuBar1.add(flowsMenu);
 
         setJMenuBar(jMenuBar1);
@@ -179,7 +189,6 @@ public class GuiJFrame extends javax.swing.JFrame
                         .addComponent(tableLbl)
                         .addGap(9, 9, 9)
                         .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 295, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(controllerIpLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -189,8 +198,9 @@ public class GuiJFrame extends javax.swing.JFrame
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(controllerIpTxtFld, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
                             .addComponent(usernameTxtFld)
-                            .addComponent(passwordFld))))
-                .addContainerGap(98, Short.MAX_VALUE))
+                            .addComponent(passwordFld)))
+                    .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 739, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -247,6 +257,7 @@ public class GuiJFrame extends javax.swing.JFrame
         //enables get flows,table label and textfield only if selected item is a node
         getFlowsMenuItm.setEnabled(false);
         dropFlowsMenuItm.setEnabled(false);
+        inspectFlowsMenuItm.setEnabled(false);
         tableLbl.setVisible(false);
         tableTxtFld.setVisible(false);
         for (int i = 0; i < nodes.length; i++) 
@@ -264,6 +275,7 @@ public class GuiJFrame extends javax.swing.JFrame
             {
                 if(flows[i].equals(jList.getSelectedValue())){
                     dropFlowsMenuItm.setEnabled(true);
+                    inspectFlowsMenuItm.setEnabled(true);
                     tableLbl.setVisible(true);
                     tableTxtFld.setVisible(true);
                     break;
@@ -303,6 +315,11 @@ public class GuiJFrame extends javax.swing.JFrame
         mNet.dropFlows(mNet.switchUsedForFlows, tableTxtFld.getText(), jList.getSelectedValue());
     }//GEN-LAST:event_dropFlowsMenuItmActionPerformed
 
+    private void inspectFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inspectFlowsMenuItmActionPerformed
+        // TODO add your handling code here:
+        printToJList(mNet.getFlowsValues(jList.getSelectedValue()),jList);
+    }//GEN-LAST:event_inspectFlowsMenuItmActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel controllerIpLbl;
@@ -313,6 +330,7 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JMenuItem getLinksMenuItm;
     private javax.swing.JMenuItem getNodesMenuItm;
     private javax.swing.JMenuItem getTopoMenuItm;
+    private javax.swing.JMenuItem inspectFlowsMenuItm;
     private javax.swing.JList<String> jList;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane;
