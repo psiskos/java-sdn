@@ -16,12 +16,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import org.apache.commons.codec.binary.Base64;
-import org.codehaus.jettison.json.JSONObject;
 
 public class HttpDelete
 {
+    HttpURLConnection connection;
 
-    public void deleteReplyRestconfInJson(String user, String password,String controllerIP,String baseURL) 
+    public void deleteRestconfInJson(String user, String password,String controllerIP,String baseURL) 
     {
 
         try 
@@ -41,7 +41,7 @@ public class HttpDelete
                     .getBytes());
 
             // Create Http connection
-            HttpURLConnection connection = (HttpURLConnection) url
+            connection = (HttpURLConnection) url
                     .openConnection();
 
             // Set connection properties
@@ -49,15 +49,13 @@ public class HttpDelete
             connection.setRequestProperty("Authorization", "Basic "
                     + encodedAuthStr);
             connection.setRequestProperty("Accept", "application/json");
-
-            // Get the response from connection's inputStream
-            InputStream content = connection.getInputStream();
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    content));
-            String line = "";
+            connection.getResponseCode();
             
         } catch (Exception e) {
             e.printStackTrace();
+        }
+        finally{
+            connection.disconnect();
         }
 
     }

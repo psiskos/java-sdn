@@ -19,6 +19,7 @@ public class NetworkElements
     protected String topologyId,username,password,controllerIp,switchUsedForFlows;
     protected String[] nodes,links,flowValues;
     HttpGetJson mJSGet,flowJSGet;
+    HttpPutJson installFlowJSPut;
     JSONObject jsonTopology,jsonFlows;
     //each url used gets different reply and need different parse reply instance
     ParseJsonReply mParseReply,mFlowParseReply;
@@ -69,7 +70,14 @@ public class NetworkElements
     {
         String dropflowsUrl = SdnRestconfCommunicator.configNodesRestconfURL + switchName + "/table/" + table + "/flow/" + flowId;
         HttpDelete dropFlow = new HttpDelete();
-        dropFlow.deleteReplyRestconfInJson(username, password, controllerIp,dropflowsUrl);
+        dropFlow.deleteRestconfInJson(username, password, controllerIp,dropflowsUrl);
+    }
+    
+    protected void installFlows()
+    {      
+        installFlowJSPut = new HttpPutJson();
+        String installFlowUrl = ":8181/restconf/config/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/2";
+        installFlowJSPut.putRestconfInJson(username, password, controllerIp,installFlowUrl);
     }
 
     

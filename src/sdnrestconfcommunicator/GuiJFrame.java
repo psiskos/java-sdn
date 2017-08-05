@@ -7,7 +7,8 @@ package sdnrestconfcommunicator;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
-
+import org.codehaus.jettison.json.JSONObject;
+import org.codehaus.jettison.json.JSONArray;
 
 /**
  *
@@ -38,7 +39,9 @@ public class GuiJFrame extends javax.swing.JFrame
         for (int i = 0; i < printArray.length; i++) 
         {
             //System.out.println(nodes[i]);
-            listModel.addElement(printArray[i]);
+            String [] splitCommas = printArray[i].split(",");
+            for (int j = 0; j < splitCommas.length; j++) 
+                listModel.addElement(splitCommas[j]);
         }
         jList.setModel( listModel );
     }
@@ -71,6 +74,7 @@ public class GuiJFrame extends javax.swing.JFrame
         getFlowsMenuItm = new javax.swing.JMenuItem();
         dropFlowsMenuItm = new javax.swing.JMenuItem();
         inspectFlowsMenuItm = new javax.swing.JMenuItem();
+        installFlowsMenuItm = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -174,6 +178,15 @@ public class GuiJFrame extends javax.swing.JFrame
         });
         flowsMenu.add(inspectFlowsMenuItm);
 
+        installFlowsMenuItm.setText("Install Flow");
+        installFlowsMenuItm.setEnabled(false);
+        installFlowsMenuItm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                installFlowsMenuItmActionPerformed(evt);
+            }
+        });
+        flowsMenu.add(installFlowsMenuItm);
+
         jMenuBar1.add(flowsMenu);
 
         setJMenuBar(jMenuBar1);
@@ -183,28 +196,24 @@ public class GuiJFrame extends javax.swing.JFrame
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 498, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(tableLbl)
-                                .addGap(9, 9, 9)
-                                .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(controllerIpLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(usernameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(passwordLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addComponent(controllerIpTxtFld, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
-                                    .addComponent(usernameTxtFld)
-                                    .addComponent(passwordFld)))))
+                        .addComponent(tableLbl)
+                        .addGap(9, 9, 9)
+                        .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 840, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(23, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(controllerIpLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(usernameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(passwordLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(controllerIpTxtFld, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
+                            .addComponent(usernameTxtFld)
+                            .addComponent(passwordFld))))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -260,14 +269,17 @@ public class GuiJFrame extends javax.swing.JFrame
         
         //enables get flows,table label and textfield only if selected item is a node
         getFlowsMenuItm.setEnabled(false);
+        installFlowsMenuItm.setEnabled(false);
         dropFlowsMenuItm.setEnabled(false);
         inspectFlowsMenuItm.setEnabled(false);
         tableLbl.setVisible(false);
         tableTxtFld.setVisible(false);
         for (int i = 0; i < nodes.length; i++) 
         {
+            //if node is selected enable get flow,install flow
             if(nodes[i].equals(jList.getSelectedValue())){
                 getFlowsMenuItm.setEnabled(true);
+                installFlowsMenuItm.setEnabled(true);
                 tableLbl.setVisible(true);
                 tableTxtFld.setVisible(true);
                 break;
@@ -277,6 +289,7 @@ public class GuiJFrame extends javax.swing.JFrame
         {
             for (int i = 0; i < flows.length; i++) 
             {
+                //if flow is selected enable drop flow,inspect flow
                 if(flows[i].equals(jList.getSelectedValue())){
                     dropFlowsMenuItm.setEnabled(true);
                     inspectFlowsMenuItm.setEnabled(true);
@@ -321,8 +334,20 @@ public class GuiJFrame extends javax.swing.JFrame
 
     private void inspectFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inspectFlowsMenuItmActionPerformed
         // TODO add your handling code here:
-        printToJList(mNet.getFlowsValues(jList.getSelectedValue()),jList);
+        String [] flowValues = mNet.getFlowsValues(jList.getSelectedValue());
+        //removes []{} symbols
+        for (int i=0; i<flowValues.length; i++)
+           flowValues[i] = flowValues[i].replaceAll("[\\{\\]\\[\"\\}]", "");
+
+        
+        printToJList((flowValues),jList);
     }//GEN-LAST:event_inspectFlowsMenuItmActionPerformed
+
+    private void installFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installFlowsMenuItmActionPerformed
+        // TODO add your handling code here:    
+        mNet.installFlows();
+        
+    }//GEN-LAST:event_installFlowsMenuItmActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -335,6 +360,7 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JMenuItem getNodesMenuItm;
     private javax.swing.JMenuItem getTopoMenuItm;
     private javax.swing.JMenuItem inspectFlowsMenuItm;
+    private javax.swing.JMenuItem installFlowsMenuItm;
     private javax.swing.JList<String> jList;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane;

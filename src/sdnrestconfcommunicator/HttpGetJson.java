@@ -20,6 +20,7 @@ import org.codehaus.jettison.json.JSONObject;
 
 public class HttpGetJson
 {
+    HttpURLConnection connection;
 
     public JSONObject getRestconfInJson(String user, String password,String controllerIP,String baseURL) 
     {
@@ -41,7 +42,7 @@ public class HttpGetJson
                     .getBytes());
 
             // Create Http connection
-            HttpURLConnection connection = (HttpURLConnection) url
+            connection = (HttpURLConnection) url
                     .openConnection();
 
             // Set connection properties
@@ -63,6 +64,10 @@ public class HttpGetJson
             return nodes;
         } catch (Exception e) {
             e.printStackTrace();
+        }
+          finally{
+            if (connection != null)
+                connection.disconnect();
         }
 
         return null;

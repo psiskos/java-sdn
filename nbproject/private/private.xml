@@ -6,6 +6,7 @@
             <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/SdnRestconfCommunicator.java</file>
             <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/HttpDelete.java</file>
             <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/NetworkElements.java</file>
+            <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/HttpPutJson.java</file>
             <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/ParseJsonReply.java</file>
             <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/GuiJFrame.java</file>
         </group>
