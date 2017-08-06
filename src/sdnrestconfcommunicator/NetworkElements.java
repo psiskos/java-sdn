@@ -8,7 +8,6 @@ package sdnrestconfcommunicator;
 import java.util.ArrayList;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
-import static sdnrestconfcommunicator.SdnRestconfCommunicator.topoRestconfURL;
 
 /**
  *
@@ -18,8 +17,7 @@ public class NetworkElements
 {
     protected String topologyId,username,password,controllerIp,switchUsedForFlows;
     protected String[] nodes,links,flowValues;
-    HttpGetJson mJSGet,flowJSGet;
-    HttpPutJson installFlowJSPut;
+    HttpJsonRequest mJSGet,flowJSGet,installFlowJSPut;
     JSONObject jsonTopology,jsonFlows;
     //each url used gets different reply and need different parse reply instance
     ParseJsonReply mParseReply,mFlowParseReply;
@@ -30,8 +28,8 @@ public class NetworkElements
         this.password = password;
         this.controllerIp = controllerIp;
         
-        mJSGet = new HttpGetJson();
-        jsonTopology = mJSGet.getRestconfInJson(username, password, controllerIp,topoRestconfURL);
+        mJSGet = new HttpJsonRequest();
+        jsonTopology = mJSGet.getRestconfInJson(username, password, controllerIp,ControllerUrls.TOPOLOGY_URL);
         mParseReply = new ParseJsonReply(jsonTopology);
     }
     
@@ -52,8 +50,8 @@ public class NetworkElements
     
     protected String[] getFlows(String switchName,String table)
     {
-        String flowsUrl = SdnRestconfCommunicator.operNodesRestconfURL + switchName + "/table/" + table;
-        flowJSGet = new HttpGetJson();
+        String flowsUrl = ControllerUrls.NODES_URL + switchName + "/table/" + table;
+        flowJSGet = new HttpJsonRequest();
         jsonFlows = mJSGet.getRestconfInJson(username, password, controllerIp,flowsUrl);
         mFlowParseReply = new ParseJsonReply(jsonFlows);
         //we need switch name to perform drop//add flow so it is saved in variable
@@ -68,16 +66,16 @@ public class NetworkElements
     
     protected void dropFlows(String switchName,String table,String flowId)
     {
-        String dropflowsUrl = SdnRestconfCommunicator.configNodesRestconfURL + switchName + "/table/" + table + "/flow/" + flowId;
-        HttpDelete dropFlow = new HttpDelete();
+        String dropflowsUrl = ControllerUrls.CONFIG_NODES_URL + switchName + "/table/" + table + "/flow/" + flowId;
+        HttpJsonRequest dropFlow = new HttpJsonRequest();
         dropFlow.deleteRestconfInJson(username, password, controllerIp,dropflowsUrl);
     }
     
-    protected void installFlows()
+    protected void installFlows(String switchName,String table,String flowId, String flowString)
     {      
-        installFlowJSPut = new HttpPutJson();
-        String installFlowUrl = ":8181/restconf/config/opendaylight-inventory:nodes/node/openflow:1/table/0/flow/2";
-        installFlowJSPut.putRestconfInJson(username, password, controllerIp,installFlowUrl);
+        installFlowJSPut = new HttpJsonRequest();
+        String installFlowUrl = ControllerUrls.CONFIG_NODES_URL + switchName + "/table/" + table + "/flow/" + flowId;
+        installFlowJSPut.putRestconfInJson(username, password, controllerIp,installFlowUrl,flowString);
     }
 
     
