@@ -5,8 +5,6 @@
  */
 package sdnrestconfcommunicator;
 
-import java.util.ArrayList;
-import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
@@ -15,10 +13,11 @@ import org.codehaus.jettison.json.JSONObject;
  */
 public class NetworkElements 
 {
-    protected String topologyId,username,password,controllerIp,switchUsedForFlows;
+    protected String topologyId,username,password,controllerIp;
+    protected String elemUsedForPorts,elemUsedForFlows;
     protected String[] nodes,links,flowValues;
-    HttpJsonRequest topoJSGet,flowJSGet,installFlowJSPut,nodeConJSGet;
-    JSONObject jsonTopology,jsonFlows,jsonNodeConnectors;
+    protected HttpJsonRequest topoJSGet,flowJSGet,installFlowJSPut,nodeConJSGet;
+    protected JSONObject jsonTopology,jsonFlows,jsonNodeConnectors;
     //each url used gets different reply and need different parse reply instance
     ParseJsonReply mParseReply,mFlowParseReply,mNodeConnectorsParseReply;
     
@@ -45,13 +44,23 @@ public class NetworkElements
     
     protected String[] getNodeConnectors(String element)
     {
-        String nodeConUrl = ControllerUrls.NODES_URL + element;//creates url
-        nodeConJSGet = new HttpJsonRequest();//gets request
-        //makes json object of request
-        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,nodeConUrl);
-        //creates instance of parse calls to parse json object
+        elemUsedForPorts = element;
+        
+        String url = ControllerUrls.NODES_URL + element;//creates url
+        nodeConJSGet = new HttpJsonRequest();//initialize instance
+        //gets response in json object
+        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
+        //creates instance of parse class to parse json object
         mNodeConnectorsParseReply = new ParseJsonReply(jsonNodeConnectors);
         return mNodeConnectorsParseReply.getNodeConnectorIDs();
+    }
+    
+    protected String[] getNodeConBytes(String nodeConnector)
+    {
+        String url = ControllerUrls.NODES_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
+        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
+        mNodeConnectorsParseReply = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsParseReply.getNodeConBytes();
     }
     
     protected String getTopoID()
@@ -61,15 +70,14 @@ public class NetworkElements
     
     protected String[] getFlows(String switchName,String table)
     {
+        //we need switch name to perform drop//add flow so it is saved in variable
+        elemUsedForFlows = switchName;
+        
         String flowsUrl = ControllerUrls.NODES_URL + switchName + "/table/" + table;
         flowJSGet = new HttpJsonRequest();
-        jsonFlows = topoJSGet.getRestconfInJson(username, password, controllerIp,flowsUrl);
-        System.out.println('\n');
-        System.out.println(jsonFlows);
-        System.out.println('\n');
+        jsonFlows = flowJSGet.getRestconfInJson(username, password, controllerIp,flowsUrl);
         mFlowParseReply = new ParseJsonReply(jsonFlows);
-        //we need switch name to perform drop//add flow so it is saved in variable
-        switchUsedForFlows = switchName;
+        
         return mFlowParseReply.getFlowsIDs();
     }
     

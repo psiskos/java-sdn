@@ -24,13 +24,22 @@
             <Property name="text" type="java.lang.String" value="Links"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="getLinksMenuitm">
+            <MenuItem class="javax.swing.JMenuItem" name="getLinksMenuItm">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Get NE Links"/>
+                <Property name="text" type="java.lang.String" value="Get Node Links"/>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getLinksMenuitmActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getLinksMenuItmActionPerformed"/>
+              </Events>
+            </MenuItem>
+            <MenuItem class="javax.swing.JMenuItem" name="getLinkTrafficMenuItm">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Get Link Traffic"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getLinkTrafficMenuItmActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>

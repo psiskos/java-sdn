@@ -143,6 +143,26 @@ public class ParseJsonReply
         return nodesCons;
     }
     
+    protected String[] getNodeConBytes()
+    {
+        String[] nodesConBytes = null;
+        try
+        {
+            JSONArray nodeCon = reply.getJSONArray("node-connector");
+            JSONObject obj = nodeCon.getJSONObject(0);
+            JSONObject obj1 = obj.getJSONObject("opendaylight-port-statistics:flow-capable-node-connector-statistics");
+            JSONObject obj2 = obj1.getJSONObject("bytes");
+            nodesConBytes = new String[2];
+            nodesConBytes[0] = obj2.getString("transmitted");
+            nodesConBytes[1] = obj2.getString("received");
+
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return nodesConBytes;
+    }
+    
     protected String[] getLinks()
     {
         String[] links = null;

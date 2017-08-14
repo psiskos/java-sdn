@@ -7,6 +7,7 @@ package sdnrestconfcommunicator;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import org.codehaus.jettison.json.JSONObject;
 import org.codehaus.jettison.json.JSONArray;
 
@@ -18,7 +19,7 @@ import org.codehaus.jettison.json.JSONArray;
 public class GuiJFrame extends javax.swing.JFrame 
 {
     NetworkElements mNet;
-    String[] nodes,flows;
+    String[] nodes,flows,nodeConnectors;
     /**
      * Creates new form GuiJFrame
      */
@@ -47,7 +48,7 @@ public class GuiJFrame extends javax.swing.JFrame
     
     private boolean isItemSelected(String itemClicked,String[] values)
     {
-        for (int i = 0; i < nodes.length; i++) 
+        for (int i = 0; i < values.length; i++) 
         {
             //if node is selected enable get flow,install flow
             if(values[i].equals(itemClicked))
@@ -79,7 +80,8 @@ public class GuiJFrame extends javax.swing.JFrame
         topoMenu = new javax.swing.JMenu();
         getNodesMenuItm = new javax.swing.JMenuItem();
         linksMenu = new javax.swing.JMenu();
-        getLinksMenuitm = new javax.swing.JMenuItem();
+        getLinksMenuItm = new javax.swing.JMenuItem();
+        getLinkTrafficMenuItm = new javax.swing.JMenuItem();
         flowsMenu = new javax.swing.JMenu();
         getFlowsMenuItm = new javax.swing.JMenuItem();
         dropFlowsMenuItm = new javax.swing.JMenuItem();
@@ -137,14 +139,23 @@ public class GuiJFrame extends javax.swing.JFrame
 
         linksMenu.setText("Links");
 
-        getLinksMenuitm.setText("Get NE Links");
-        getLinksMenuitm.setEnabled(false);
-        getLinksMenuitm.addActionListener(new java.awt.event.ActionListener() {
+        getLinksMenuItm.setText("Get Node Links");
+        getLinksMenuItm.setEnabled(false);
+        getLinksMenuItm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getLinksMenuitmActionPerformed(evt);
+                getLinksMenuItmActionPerformed(evt);
             }
         });
-        linksMenu.add(getLinksMenuitm);
+        linksMenu.add(getLinksMenuItm);
+
+        getLinkTrafficMenuItm.setText("Get Link Traffic");
+        getLinkTrafficMenuItm.setEnabled(false);
+        getLinkTrafficMenuItm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getLinkTrafficMenuItmActionPerformed(evt);
+            }
+        });
+        linksMenu.add(getLinkTrafficMenuItm);
 
         jMenuBar1.add(linksMenu);
 
@@ -264,9 +275,14 @@ public class GuiJFrame extends javax.swing.JFrame
 
     private void getFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getFlowsMenuItmActionPerformed
         // TODO add your handling code here:
+        if (isItemSelected(jList.getSelectedValue(),nodes))
+        {
+            flows = mNet.getFlows(jList.getSelectedValue(),tableTxtFld.getText());
+            printToJList(flows,jList);
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Select a node!!");
         
-        flows = mNet.getFlows(jList.getSelectedValue(),tableTxtFld.getText());
-        printToJList(flows,jList);
     }//GEN-LAST:event_getFlowsMenuItmActionPerformed
 
     private void jListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListMouseClicked
@@ -278,9 +294,11 @@ public class GuiJFrame extends javax.swing.JFrame
         installFlowsMenuItm.setEnabled(false);
         dropFlowsMenuItm.setEnabled(false);
         inspectFlowsMenuItm.setEnabled(false);
+        getLinksMenuItm.setEnabled(false);
+        getLinkTrafficMenuItm.setEnabled(false);
         tableLbl.setVisible(false);
         tableTxtFld.setVisible(false);
-        getLinksMenuitm.setEnabled(false);
+
         
         //is node selected
         if(isItemSelected(jList.getSelectedValue(),nodes)){
@@ -288,7 +306,7 @@ public class GuiJFrame extends javax.swing.JFrame
                 installFlowsMenuItm.setEnabled(true);
                 tableLbl.setVisible(true);
                 tableTxtFld.setVisible(true);
-                getLinksMenuitm.setEnabled(true);
+                getLinksMenuItm.setEnabled(true);
         }
 
         
@@ -303,6 +321,15 @@ public class GuiJFrame extends javax.swing.JFrame
                 tableTxtFld.setVisible(true);        
             }                  
         }
+        
+        if(nodeConnectors!= null)
+        {
+            //is flow selected
+            if(isItemSelected(jList.getSelectedValue(),nodeConnectors))
+            {
+                getLinkTrafficMenuItm.setEnabled(true);
+            }                  
+        }
     }//GEN-LAST:event_jListMouseClicked
 
     private void getFlowsMenuItmMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_getFlowsMenuItmMouseClicked
@@ -315,30 +342,59 @@ public class GuiJFrame extends javax.swing.JFrame
 
     private void dropFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dropFlowsMenuItmActionPerformed
         // TODO add your handling code here:
-        mNet.dropFlows(mNet.switchUsedForFlows, tableTxtFld.getText(), jList.getSelectedValue());
+        if (isItemSelected(jList.getSelectedValue(),flows))
+            mNet.dropFlows(mNet.elemUsedForFlows, tableTxtFld.getText(), jList.getSelectedValue());
+        else
+            JOptionPane.showMessageDialog(null, "Select a flow!!");      
     }//GEN-LAST:event_dropFlowsMenuItmActionPerformed
 
     private void inspectFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inspectFlowsMenuItmActionPerformed
         // TODO add your handling code here:
-        String [] flowValues = mNet.getFlowsValues(jList.getSelectedValue());
-        //removes []{} symbols
-        for (int i=0; i<flowValues.length; i++)
-           flowValues[i] = flowValues[i].replaceAll("[\\{\\]\\[\"\\}]", "");
-
+        if (isItemSelected(jList.getSelectedValue(),flows))
+        {
+            String [] flowValues = mNet.getFlowsValues(jList.getSelectedValue());
+            //removes []{} symbols
+            for (int i=0; i<flowValues.length; i++)
+               flowValues[i] = flowValues[i].replaceAll("[\\{\\]\\[\"\\}]", "");      
+            printToJList((flowValues),jList);
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Select a flow!!");  
         
-        printToJList((flowValues),jList);
     }//GEN-LAST:event_inspectFlowsMenuItmActionPerformed
 
     private void installFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installFlowsMenuItmActionPerformed
         // TODO add your handling code here:    
+        if (isItemSelected(jList.getSelectedValue(),nodes))
+            new InstallFlowJFrame(jList.getSelectedValue(), mNet.username, mNet.password, mNet.controllerIp).setVisible(true);
+        else
+            JOptionPane.showMessageDialog(null, "Select a node!!");
         
-        new InstallFlowJFrame(jList.getSelectedValue(), mNet.username, mNet.password, mNet.controllerIp).setVisible(true);
     }//GEN-LAST:event_installFlowsMenuItmActionPerformed
 
-    private void getLinksMenuitmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getLinksMenuitmActionPerformed
+    private void getLinksMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getLinksMenuItmActionPerformed
         // TODO add your handling code here:
-        printToJList(mNet.getNodeConnectors(jList.getSelectedValue()),jList);    
-    }//GEN-LAST:event_getLinksMenuitmActionPerformed
+        //if selected item is a node
+        if(isItemSelected(jList.getSelectedValue(),nodes))
+        {
+            nodeConnectors = mNet.getNodeConnectors(jList.getSelectedValue());
+            printToJList(nodeConnectors,jList);
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Select a node!!");
+    }//GEN-LAST:event_getLinksMenuItmActionPerformed
+
+    private void getLinkTrafficMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getLinkTrafficMenuItmActionPerformed
+        // TODO add your handling code here:
+        if(isItemSelected(jList.getSelectedValue(),nodeConnectors))
+        {
+            String[] test = mNet.getNodeConBytes(jList.getSelectedValue());
+            System.out.println(test[0]);
+            System.out.println(test[1]);
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Select a port/node-connector!!");
+    }//GEN-LAST:event_getLinkTrafficMenuItmActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -347,7 +403,8 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JMenuItem dropFlowsMenuItm;
     private javax.swing.JMenu flowsMenu;
     private javax.swing.JMenuItem getFlowsMenuItm;
-    private javax.swing.JMenuItem getLinksMenuitm;
+    private javax.swing.JMenuItem getLinkTrafficMenuItm;
+    private javax.swing.JMenuItem getLinksMenuItm;
     private javax.swing.JMenuItem getNodesMenuItm;
     private javax.swing.JMenuItem inspectFlowsMenuItm;
     private javax.swing.JMenuItem installFlowsMenuItm;
