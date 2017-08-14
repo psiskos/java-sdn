@@ -6,6 +6,7 @@
 package sdnrestconfcommunicator;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Iterator;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
@@ -14,7 +15,7 @@ import org.codehaus.jettison.json.JSONObject;
  *
  * @author pas
  */
-public class ParseJsonReply 
+public class ParseJsonReply
 {
     final private JSONObject reply;
     JSONArray flow;
@@ -118,6 +119,28 @@ public class ParseJsonReply
             e.printStackTrace();
         }
         return nodes;
+    }
+    
+    protected String[] getNodeConnectorIDs()
+    {
+        String[] nodesCons = null;
+        try
+        {
+            JSONArray node = reply.getJSONArray("node");
+            JSONObject obj = node.getJSONObject(0);
+
+            JSONArray nodeConnector = obj.getJSONArray("node-connector");
+            nodesCons = new String[nodeConnector.length()];
+            for (int i = 0; i < nodeConnector.length(); i++) 
+            {
+                JSONObject jsonobject = nodeConnector.getJSONObject(i);
+                nodesCons[i] = jsonobject.getString("id");
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return nodesCons;
     }
     
     protected String[] getLinks()

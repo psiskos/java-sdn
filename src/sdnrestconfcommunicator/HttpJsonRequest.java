@@ -23,7 +23,6 @@ import org.codehaus.jettison.json.JSONObject;
 public class HttpJsonRequest 
 {
     HttpURLConnection connection;
-    JSONObject putResult;
     int callStatus;
     
     public boolean putRestconfInJson(String user, String password,String controllerIP,String baseURL, String flowString) 

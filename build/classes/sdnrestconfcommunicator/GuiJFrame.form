@@ -9,30 +9,28 @@
             <Property name="text" type="java.lang.String" value="Topology"/>
           </Properties>
           <SubComponents>
-            <MenuItem class="javax.swing.JMenuItem" name="getTopoMenuItm">
-              <Properties>
-                <Property name="text" type="java.lang.String" value="GetTopology"/>
-              </Properties>
-              <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getTopoMenuItmActionPerformed"/>
-              </Events>
-            </MenuItem>
             <MenuItem class="javax.swing.JMenuItem" name="getNodesMenuItm">
               <Properties>
                 <Property name="text" type="java.lang.String" value="Get Nodes"/>
-                <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getNodesMenuItmActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="getLinksMenuItm">
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="linksMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Links"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="getLinksMenuitm">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Get Links"/>
+                <Property name="text" type="java.lang.String" value="Get NE Links"/>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getLinksMenuItmActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getLinksMenuitmActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
