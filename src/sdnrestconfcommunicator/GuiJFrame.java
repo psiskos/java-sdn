@@ -5,10 +5,15 @@
  */
 package sdnrestconfcommunicator;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 import org.jfree.ui.RefineryUtilities;
+import static sdnrestconfcommunicator.ControllerUrls.REFRESH_TIMER;
 
 /**
  *
@@ -386,18 +391,31 @@ public class GuiJFrame extends javax.swing.JFrame
 
     private void getLinkTrafficMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getLinkTrafficMenuItmActionPerformed
         // TODO add your handling code here:
+        
+        
         if(isItemSelected(jList.getSelectedValue(),nodeConnectors))
         {
-            String[] test = mNet.getNodeConBytes(jList.getSelectedValue());
-            System.out.println(test[0]);
-            System.out.println(test[1]);
             
-            java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new TrafficChart(Integer.parseInt(test[0]),Integer.parseInt(test[1]),5).setVisible(true);
-            }
-        });
+            String[] traRecBytesArray = mNet.getNodeConBytes(jList.getSelectedValue());
+            TrafficChart  mChart = new TrafficChart(Double.parseDouble(traRecBytesArray[0]),
+                    Double.parseDouble(traRecBytesArray[1]));
+            mChart.setVisible(true);
+
+            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+            Runnable updateRunnable = new Runnable() {
+                public void run() 
+                {
+                    String[] tmp = mNet.getNodeConBytes(jList.getSelectedValue());
+//                    System.out.println(tmp[0]);
+//                    System.out.println(tmp[1]);
+                    mChart.updateGraph(Double.parseDouble(tmp[0]),Double.parseDouble(tmp[1]));
+                    if(!mChart.isVisible()){
+                        executor.shutdown();
+                    }
+                }
+            };            
+            
+            executor.scheduleAtFixedRate(updateRunnable, 0, REFRESH_TIMER, TimeUnit.MILLISECONDS);
 
             
         }

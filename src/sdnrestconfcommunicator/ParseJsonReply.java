@@ -6,7 +6,6 @@
 package sdnrestconfcommunicator;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Iterator;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;

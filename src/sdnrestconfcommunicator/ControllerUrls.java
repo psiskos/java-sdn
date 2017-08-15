@@ -15,4 +15,7 @@ public class ControllerUrls
     final public static String TOPOLOGY_URL = ":8181/restconf/operational/network-topology:network-topology/";
     final public static String NODES_URL = ":8181/restconf/operational/opendaylight-inventory:nodes/node/";
     final public static String CONFIG_NODES_URL = ":8181/restconf/config/opendaylight-inventory:nodes/node/";
+    
+    //global static vars
+    final public static long REFRESH_TIMER = 5000;//millis
 }
