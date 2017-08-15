@@ -8,8 +8,7 @@ package sdnrestconfcommunicator;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
-import org.codehaus.jettison.json.JSONObject;
-import org.codehaus.jettison.json.JSONArray;
+import org.jfree.ui.RefineryUtilities;
 
 /**
  *
@@ -27,6 +26,7 @@ public class GuiJFrame extends javax.swing.JFrame
         initComponents();
         tableLbl.setVisible(false);
         tableTxtFld.setVisible(false);
+        
        
     }
     
@@ -391,6 +391,15 @@ public class GuiJFrame extends javax.swing.JFrame
             String[] test = mNet.getNodeConBytes(jList.getSelectedValue());
             System.out.println(test[0]);
             System.out.println(test[1]);
+            
+            java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new TrafficChart(Integer.parseInt(test[0]),Integer.parseInt(test[1]),5).setVisible(true);
+            }
+        });
+
+            
         }
         else
             JOptionPane.showMessageDialog(null, "Select a port/node-connector!!");
