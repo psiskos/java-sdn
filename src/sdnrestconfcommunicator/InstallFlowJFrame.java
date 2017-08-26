@@ -118,7 +118,7 @@ public class InstallFlowJFrame extends javax.swing.JFrame
     private void installFlowBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installFlowBtnActionPerformed
         // TODO add your handling code here:
         installFlowRequest = new HttpJsonRequest();
-        String baseUrl = ControllerUrls.CONFIG_NODES_URL + elementUsedForFlows +
+        String baseUrl = PublicStatics.CONFIG_NODES_URL + elementUsedForFlows +
                 "/table/" + tableValueTextFld.getText() +
                 "/flow/" + flowIdValueTxtFld.getText();
         if (installFlowRequest.putRestconfInJson(username, password, controllerIp, baseUrl, flowTextArea.getText()))

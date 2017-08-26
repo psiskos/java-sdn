@@ -28,7 +28,7 @@ public class NetworkElements
         this.controllerIp = controllerIp;
         
         topoJSGet = new HttpJsonRequest();
-        jsonTopology = topoJSGet.getRestconfInJson(username, password, controllerIp,ControllerUrls.TOPOLOGY_URL);
+        jsonTopology = topoJSGet.getRestconfInJson(username, password, controllerIp,PublicStatics.TOPOLOGY_URL);
         mParseReply = new ParseJsonReply(jsonTopology);
     }
     
@@ -46,7 +46,7 @@ public class NetworkElements
     {
         elemUsedForPorts = element;
         
-        String url = ControllerUrls.NODES_URL + element;//creates url
+        String url = PublicStatics.NODES_URL + element;//creates url
         nodeConJSGet = new HttpJsonRequest();//initialize instance
         //gets response in json object
         jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
@@ -57,7 +57,7 @@ public class NetworkElements
     
     protected String[] getNodeConBytes(String nodeConnector)
     {
-        String url = ControllerUrls.NODES_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
+        String url = PublicStatics.NODES_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
         jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
         mNodeConnectorsParseReply = new ParseJsonReply(jsonNodeConnectors);
         return mNodeConnectorsParseReply.getNodeConBytes();
@@ -73,7 +73,7 @@ public class NetworkElements
         //we need switch name to perform drop//add flow so it is saved in variable
         elemUsedForFlows = switchName;
         
-        String flowsUrl = ControllerUrls.NODES_URL + switchName + "/table/" + table;
+        String flowsUrl = PublicStatics.NODES_URL + switchName + "/table/" + table;
         flowJSGet = new HttpJsonRequest();
         jsonFlows = flowJSGet.getRestconfInJson(username, password, controllerIp,flowsUrl);
         mFlowParseReply = new ParseJsonReply(jsonFlows);
@@ -88,7 +88,7 @@ public class NetworkElements
     
     protected void dropFlows(String switchName,String table,String flowId)
     {
-        String dropflowsUrl = ControllerUrls.CONFIG_NODES_URL + switchName + "/table/" + table + "/flow/" + flowId;
+        String dropflowsUrl = PublicStatics.CONFIG_NODES_URL + switchName + "/table/" + table + "/flow/" + flowId;
         HttpJsonRequest dropFlow = new HttpJsonRequest();
         dropFlow.deleteRestconfInJson(username, password, controllerIp,dropflowsUrl);
     }

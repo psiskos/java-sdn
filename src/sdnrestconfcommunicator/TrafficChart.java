@@ -19,14 +19,16 @@ import org.jfree.data.xy.XYDataset;
 
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import static sdnrestconfcommunicator.ControllerUrls.REFRESH_TIMER;
+import static sdnrestconfcommunicator.PublicStatics.KEEP_ALIVE_THRESHOLD;
+import static sdnrestconfcommunicator.PublicStatics.NO_DRAW_THRESHOLD;
+import static sdnrestconfcommunicator.PublicStatics.REFRESH_TIMER;
 
 public class TrafficChart extends JFrame
 {
     XYSeries recBytes;
     XYSeries transBytes;
     ChartPanel mChartPanel;
-    int counter = 1;
+    int counter = 1,noDrawInterval = 1;
     double transByt,recByte;
         
    
@@ -45,25 +47,38 @@ public class TrafficChart extends JFrame
    }
    
    public void updateGraph(double trByt,double rcByt) 
-   {        
-      double rateTr = (trByt - transByt)/REFRESH_TIMER * 1000;
-      double rateRc = (rcByt - recByte)/REFRESH_TIMER * 1000;
-      recBytes.add(REFRESH_TIMER/1000 * counter, rateRc);
-      transBytes.add(REFRESH_TIMER/1000 * counter, rateTr);
-      counter++;
+   {       
+      double timeInSecs = REFRESH_TIMER * noDrawInterval;
+      double rateTr = (trByt - transByt)/timeInSecs;
+      double rateRc = (rcByt - recByte)/timeInSecs;
       
-      //current bytes value is stored to be substracted from the next value
-      transByt = trByt;
-      recByte = rcByt;
-      System.out.println("Transmitted: " + transByt + "  "+ rateTr);
-      System.out.println("Received: " +recByte+ "  "+ rateRc);
+      if((rateTr != 0 && rateRc != 0) || noDrawInterval > NO_DRAW_THRESHOLD)
+        updateDraw(rateTr,rateRc, trByt, rcByt);
+      else
+          noDrawInterval++;
+          
+      //used for drawing x - time axis
+      counter++;
     }
+   
+   public void updateDraw(double rateTrans,double rateRecv, double transmitted, double received)
+   {
+        transBytes.add(REFRESH_TIMER * counter, rateTrans);
+        recBytes.add(REFRESH_TIMER * counter, rateRecv);
+
+        //current bytes value is stored to be substracted from the next value
+        transByt = transmitted;
+        recByte = received;
+        System.out.println("Transmitted: " + transByt + "  "+ rateTrans);
+        System.out.println("Received: " +recByte+ "  "+ rateRecv);
+        noDrawInterval = 1;
+   }
    
    
    private ChartPanel createChartPanel(double trans,double rec) 
    {
         String chartTitle = "Port Traffic";
-        String xAxisLabel = "Time";
+        String xAxisLabel = "Seconds";
         String yAxisLabel = "Bytes/s";
 
         XYDataset dataset = createDataset(rec,trans);

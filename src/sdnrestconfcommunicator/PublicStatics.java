@@ -9,7 +9,7 @@ package sdnrestconfcommunicator;
  *
  * @author pas
  */
-public class ControllerUrls 
+public class PublicStatics 
 {
     //Opendaylight
     final public static String TOPOLOGY_URL = ":8181/restconf/operational/network-topology:network-topology/";
@@ -17,5 +17,8 @@ public class ControllerUrls
     final public static String CONFIG_NODES_URL = ":8181/restconf/config/opendaylight-inventory:nodes/node/";
     
     //global static vars
-    final public static long REFRESH_TIMER = 5000;//millis
+    final public static long REFRESH_TIMER = 1;//seconds
+    //times that thread waits before drawing if rates are 0
+    final public static long NO_DRAW_THRESHOLD = 3;
+    final public static long KEEP_ALIVE_THRESHOLD = 100;//bytes/s
 }

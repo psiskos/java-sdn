@@ -13,7 +13,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
 import org.jfree.ui.RefineryUtilities;
-import static sdnrestconfcommunicator.ControllerUrls.REFRESH_TIMER;
+import static sdnrestconfcommunicator.PublicStatics.REFRESH_TIMER;
 
 /**
  *
@@ -415,7 +415,7 @@ public class GuiJFrame extends javax.swing.JFrame
                 }
             };            
             
-            executor.scheduleAtFixedRate(updateRunnable, 0, REFRESH_TIMER, TimeUnit.MILLISECONDS);
+            executor.scheduleAtFixedRate(updateRunnable, 0, REFRESH_TIMER, TimeUnit.SECONDS);
 
             
         }
