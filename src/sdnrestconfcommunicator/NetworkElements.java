@@ -63,6 +63,12 @@ public class NetworkElements
         return mNodeConnectorsParseReply.getNodeConBytes();
     }
     
+    protected int getInterfaceSpeed()
+    {
+        //mNodeConnectors will already be initialized in getNodeConBytes
+        return mNodeConnectorsParseReply.getInterfaceSpeed();
+    }
+    
     protected String getTopoID()
     {
         return mParseReply.getTopologyID();

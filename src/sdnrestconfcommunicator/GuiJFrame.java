@@ -397,8 +397,10 @@ public class GuiJFrame extends javax.swing.JFrame
         {
             
             String[] traRecBytesArray = mNet.getNodeConBytes(jList.getSelectedValue());
+            int interfaceSpeed = mNet.getInterfaceSpeed();//kbps
+            
             TrafficChart  mChart = new TrafficChart(Double.parseDouble(traRecBytesArray[0]),
-                    Double.parseDouble(traRecBytesArray[1]));
+                    Double.parseDouble(traRecBytesArray[1]), interfaceSpeed);
             mChart.setVisible(true);
 
             ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
@@ -408,7 +410,7 @@ public class GuiJFrame extends javax.swing.JFrame
                     String[] tmp = mNet.getNodeConBytes(jList.getSelectedValue());
 //                    System.out.println(tmp[0]);
 //                    System.out.println(tmp[1]);
-                    mChart.updateGraph(Double.parseDouble(tmp[0]),Double.parseDouble(tmp[1]));
+                    mChart.updateGraph(Double.parseDouble(tmp[0]),Double.parseDouble(tmp[1]),interfaceSpeed);
                     if(!mChart.isVisible()){
                         executor.shutdown();
                     }

@@ -20,5 +20,6 @@ public class PublicStatics
     final public static long REFRESH_TIMER = 1;//seconds
     //times that thread waits before drawing if rates are 0
     final public static long NO_DRAW_THRESHOLD = 3;
-    final public static long KEEP_ALIVE_THRESHOLD = 100;//bytes/s
+    final public static double CONGESTION_THRESHOLD = 85;//percentage
+    
 }

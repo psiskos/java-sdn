@@ -6,20 +6,22 @@
 package sdnrestconfcommunicator;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.util.concurrent.TimeUnit;
-import javax.swing.JButton;
+import java.awt.Color;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel; 
 import org.jfree.chart.JFreeChart; 
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.plot.Marker;
+import org.jfree.chart.plot.ValueMarker;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.xy.XYDataset;
 
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import static sdnrestconfcommunicator.PublicStatics.KEEP_ALIVE_THRESHOLD;
+import org.jfree.ui.RectangleAnchor;
+import org.jfree.ui.TextAnchor;
+import static sdnrestconfcommunicator.PublicStatics.CONGESTION_THRESHOLD;
 import static sdnrestconfcommunicator.PublicStatics.NO_DRAW_THRESHOLD;
 import static sdnrestconfcommunicator.PublicStatics.REFRESH_TIMER;
 
@@ -28,13 +30,15 @@ public class TrafficChart extends JFrame
     XYSeries recBytes;
     XYSeries transBytes;
     ChartPanel mChartPanel;
-    int counter = 1,noDrawInterval = 1;
-    double transByt,recByte;
+    JFreeChart chart;
+    int counter = 1,noDrawInterval = 1,interfaceSpeed;
+    double transByt,recByte,linkUtilTr,linkUtilRc;
         
    
-   public TrafficChart( double transByt,double recByt)
+   public TrafficChart( double transByt,double recByt, int interfaceSpeed)
    {     
         super("Port Traffic Chart");
+        this.interfaceSpeed = interfaceSpeed;
         this.transByt = transByt;
         this.recByte = recByt;
         mChartPanel = createChartPanel(transByt,recByt);                  
@@ -46,14 +50,22 @@ public class TrafficChart extends JFrame
         setLocationRelativeTo(null);     
    }
    
-   public void updateGraph(double trByt,double rcByt) 
+   public void updateGraph(double trByt,double rcByt,int interfaceSpeed) 
    {       
       double timeInSecs = REFRESH_TIMER * noDrawInterval;
       double rateTr = (trByt - transByt)/timeInSecs;
       double rateRc = (rcByt - recByte)/timeInSecs;
       
+      
       if((rateTr != 0 && rateRc != 0) || noDrawInterval > NO_DRAW_THRESHOLD)
+      {
         updateDraw(rateTr,rateRc, trByt, rcByt);
+//        linkUtilTr = 8 * rateTr/interfaceSpeed / 10;//int speed is in kbps not bps
+//        System.out.println("Outgoing Link Utilization " + linkUtilTr + " %");
+//        linkUtilRc = 8 * rateRc/interfaceSpeed / 10;
+//        System.out.println("Incoming Link Utilization " + linkUtilRc + " %");
+
+      }
       else
           noDrawInterval++;
           
@@ -77,17 +89,30 @@ public class TrafficChart extends JFrame
    
    private ChartPanel createChartPanel(double trans,double rec) 
    {
-        String chartTitle = "Port Traffic";
+        int speedInMega = interfaceSpeed/1000;
+        String chartTitle = "Capacity: " + speedInMega + " Mbps";
         String xAxisLabel = "Seconds";
         String yAxisLabel = "Bytes/s";
 
         XYDataset dataset = createDataset(rec,trans);
 
-        JFreeChart chart = ChartFactory.createXYLineChart(chartTitle,
+        chart = ChartFactory.createXYLineChart(chartTitle,
                 xAxisLabel, yAxisLabel, dataset);
-
+        addMarker();
         return new ChartPanel(chart);
         
+    }
+   
+    private void addMarker()
+    {
+        XYPlot plot = chart.getXYPlot();
+        double markerPoint = interfaceSpeed / 8 * CONGESTION_THRESHOLD * 10;
+        Marker congestion = new ValueMarker(markerPoint);
+        congestion.setPaint(Color.red);
+        congestion.setLabel("Link Congestion Threshold: " + CONGESTION_THRESHOLD + " %");
+        congestion.setLabelAnchor(RectangleAnchor.BOTTOM_RIGHT);
+        congestion.setLabelTextAnchor(TextAnchor.TOP_RIGHT);
+        plot.addRangeMarker(congestion);
     }
  
     private XYDataset createDataset(double rec,double trans) 

@@ -149,8 +149,9 @@ public class ParseJsonReply
         {
             JSONArray nodeCon = reply.getJSONArray("node-connector");
             JSONObject obj = nodeCon.getJSONObject(0);
-            JSONObject obj1 = obj.getJSONObject("opendaylight-port-statistics:flow-capable-node-connector-statistics");
+            JSONObject obj1 = obj.getJSONObject("opendaylight-port-statistics:flow-capable-node-connector-statistics");           
             JSONObject obj2 = obj1.getJSONObject("bytes");
+            
             nodesConBytes = new String[2];
             nodesConBytes[0] = obj2.getString("transmitted");
             nodesConBytes[1] = obj2.getString("received");
@@ -160,6 +161,21 @@ public class ParseJsonReply
             e.printStackTrace();
         }
         return nodesConBytes;
+    }
+    
+    protected int getInterfaceSpeed()
+    {
+        int interSpeed = 0;
+        try
+        {
+            JSONArray nodeCon = reply.getJSONArray("node-connector");
+            JSONObject obj = nodeCon.getJSONObject(0);
+            interSpeed = obj.getInt("flow-node-inventory:current-speed");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return interSpeed;
     }
     
     protected String[] getLinks()
