@@ -87,6 +87,7 @@ public class GuiJFrame extends javax.swing.JFrame
         linksMenu = new javax.swing.JMenu();
         getLinksMenuItm = new javax.swing.JMenuItem();
         getLinkTrafficMenuItm = new javax.swing.JMenuItem();
+        getUtilMenuItm = new javax.swing.JMenuItem();
         flowsMenu = new javax.swing.JMenu();
         getFlowsMenuItm = new javax.swing.JMenuItem();
         dropFlowsMenuItm = new javax.swing.JMenuItem();
@@ -161,6 +162,15 @@ public class GuiJFrame extends javax.swing.JFrame
             }
         });
         linksMenu.add(getLinkTrafficMenuItm);
+
+        getUtilMenuItm.setText("Get Node Utilization");
+        getUtilMenuItm.setEnabled(false);
+        getUtilMenuItm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                getUtilMenuItmActionPerformed(evt);
+            }
+        });
+        linksMenu.add(getUtilMenuItm);
 
         jMenuBar1.add(linksMenu);
 
@@ -301,6 +311,8 @@ public class GuiJFrame extends javax.swing.JFrame
         inspectFlowsMenuItm.setEnabled(false);
         getLinksMenuItm.setEnabled(false);
         getLinkTrafficMenuItm.setEnabled(false);
+        getUtilMenuItm.setEnabled(false);
+        
         tableLbl.setVisible(false);
         tableTxtFld.setVisible(false);
 
@@ -312,9 +324,10 @@ public class GuiJFrame extends javax.swing.JFrame
                 tableLbl.setVisible(true);
                 tableTxtFld.setVisible(true);
                 getLinksMenuItm.setEnabled(true);
+                getUtilMenuItm.setEnabled(true);
         }
 
-        
+        //is flow selected
         if(flows!= null)
         {
             //is flow selected
@@ -326,7 +339,7 @@ public class GuiJFrame extends javax.swing.JFrame
                 tableTxtFld.setVisible(true);        
             }                  
         }
-        
+        //is node-connector/link selected
         if(nodeConnectors!= null)
         {
             //is flow selected
@@ -395,8 +408,8 @@ public class GuiJFrame extends javax.swing.JFrame
         
         if(isItemSelected(jList.getSelectedValue(),nodeConnectors))
         {
-            
-            String[] traRecBytesArray = mNet.getNodeConBytes(jList.getSelectedValue());
+            String selectedNode = jList.getSelectedValue();
+            String[] traRecBytesArray = mNet.getNodeConBytes(selectedNode);
             int interfaceSpeed = mNet.getInterfaceSpeed();//kbps
             
             TrafficChart  mChart = new TrafficChart(Double.parseDouble(traRecBytesArray[0]),
@@ -407,7 +420,7 @@ public class GuiJFrame extends javax.swing.JFrame
             Runnable updateRunnable = new Runnable() {
                 public void run() 
                 {
-                    String[] tmp = mNet.getNodeConBytes(jList.getSelectedValue());
+                    String[] tmp = mNet.getNodeConBytes(selectedNode);
 //                    System.out.println(tmp[0]);
 //                    System.out.println(tmp[1]);
                     mChart.updateGraph(Double.parseDouble(tmp[0]),Double.parseDouble(tmp[1]),interfaceSpeed);
@@ -425,6 +438,11 @@ public class GuiJFrame extends javax.swing.JFrame
             JOptionPane.showMessageDialog(null, "Select a port/node-connector!!");
     }//GEN-LAST:event_getLinkTrafficMenuItmActionPerformed
 
+    private void getUtilMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getUtilMenuItmActionPerformed
+        // TODO add your handling code here:
+        printToJList(mNet.getNodeUtil(jList.getSelectedValue()),jList);
+    }//GEN-LAST:event_getUtilMenuItmActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel controllerIpLbl;
@@ -435,6 +453,7 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JMenuItem getLinkTrafficMenuItm;
     private javax.swing.JMenuItem getLinksMenuItm;
     private javax.swing.JMenuItem getNodesMenuItm;
+    private javax.swing.JMenuItem getUtilMenuItm;
     private javax.swing.JMenuItem inspectFlowsMenuItm;
     private javax.swing.JMenuItem installFlowsMenuItm;
     private javax.swing.JList<String> jList;

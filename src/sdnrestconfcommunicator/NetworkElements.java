@@ -5,6 +5,7 @@
  */
 package sdnrestconfcommunicator;
 
+import java.util.ArrayList;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
@@ -53,6 +54,19 @@ public class NetworkElements
         //creates instance of parse class to parse json object
         mNodeConnectorsParseReply = new ParseJsonReply(jsonNodeConnectors);
         return mNodeConnectorsParseReply.getNodeConnectorIDs();
+    }
+    
+    protected String[] getNodeUtil(String element)
+    {
+        ArrayList<String> linksTraffic = new ArrayList<String>();
+        String[] nodeConnectors = getNodeConnectors(element);
+        for (int i=0; i < nodeConnectors.length; i++ )
+        {
+            String[] nodeConTraffic = getNodeConBytes(nodeConnectors[i]);
+            linksTraffic.add(nodeConnectors[i] + " Transmitted: " + nodeConTraffic[0]);
+            linksTraffic.add(nodeConnectors[i] + " Received: " + nodeConTraffic[1]);
+        }
+        return linksTraffic.toArray(new String[0]);
     }
     
     protected String[] getNodeConBytes(String nodeConnector)

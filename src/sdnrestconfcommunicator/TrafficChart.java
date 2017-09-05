@@ -11,7 +11,6 @@ import javax.swing.JFrame;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel; 
 import org.jfree.chart.JFreeChart; 
-import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.Marker;
 import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
@@ -106,7 +105,7 @@ public class TrafficChart extends JFrame
     private void addMarker()
     {
         XYPlot plot = chart.getXYPlot();
-        double markerPoint = interfaceSpeed / 8 * CONGESTION_THRESHOLD * 10;
+        double markerPoint = interfaceSpeed / 8 * CONGESTION_THRESHOLD * 10;//intspeed is in kbps
         Marker congestion = new ValueMarker(markerPoint);
         congestion.setPaint(Color.red);
         congestion.setLabel("Link Congestion Threshold: " + CONGESTION_THRESHOLD + " %");
@@ -117,17 +116,13 @@ public class TrafficChart extends JFrame
  
     private XYDataset createDataset(double rec,double trans) 
     {
-        // creates an XY dataset...
-            // returns the dataset
         recBytes = new XYSeries("Received");
         transBytes = new XYSeries("Transmitted");
         XYSeriesCollection dataset = new XYSeriesCollection();
         
-        //
         recBytes.add(0,0);
         transBytes.add(0,0);
-        
-        
+               
         dataset.addSeries(recBytes);
         dataset.addSeries(transBytes);
 
