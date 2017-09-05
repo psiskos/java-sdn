@@ -5,6 +5,7 @@
  */
 package sdnrestconfcommunicator;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -58,15 +59,60 @@ public class NetworkElements
     
     protected String[] getNodeUtil(String element)
     {
-        ArrayList<String> linksTraffic = new ArrayList<String>();
+        ArrayList<String> linksTraffic = new ArrayList<>();
         String[] nodeConnectors = getNodeConnectors(element);
+        double avgLinkTrTraffic, avgLinkRcTraffic;
+        int seconds;
+        DecimalFormat df = new DecimalFormat("#.##");
+
         for (int i=0; i < nodeConnectors.length; i++ )
         {
             String[] nodeConTraffic = getNodeConBytes(nodeConnectors[i]);
-            linksTraffic.add(nodeConnectors[i] + " Transmitted: " + nodeConTraffic[0]);
-            linksTraffic.add(nodeConnectors[i] + " Received: " + nodeConTraffic[1]);
+            seconds = Integer.parseInt(getNodeConSeconds(nodeConnectors[i]));
+            
+            avgLinkTrTraffic = Double.parseDouble(nodeConTraffic[0]) / seconds;
+            avgLinkRcTraffic = Double.parseDouble(nodeConTraffic[1]) / seconds;
+            
+            avgLinkTrTraffic = Double.parseDouble(df.format(avgLinkTrTraffic));
+            avgLinkRcTraffic = Double.parseDouble(df.format(avgLinkRcTraffic));
+            
+            linksTraffic.add(nodeConnectors[i] +"  " + avgLinkTrTraffic +
+                    //" Bps  Tx: " + nodeConTraffic[0] +
+                    " Bytes in " + formatSeconds(seconds));
+            linksTraffic.add(nodeConnectors[i] +"  " + avgLinkRcTraffic +
+                    //" Bps  Rx: " + nodeConTraffic[1] +
+                    " Bytes in " + formatSeconds(seconds));
         }
         return linksTraffic.toArray(new String[0]);
+    }
+    
+    private String formatSeconds(int seconds)
+    {
+        String timeFormatted = null;
+        if (seconds > 3600)//hours
+        {
+            int hours = seconds / 3600;
+            int mins = (seconds % 3600) / 60;
+            int remSec = (seconds % 3600) % 60;
+            timeFormatted = hours + " hours " + mins + " minutes " + remSec + " seconds";
+        }
+        else if (seconds > 60)//minutes
+        {
+            int mins = seconds/60;
+            int remSec = seconds % 60;
+            timeFormatted = mins + " minutes " + remSec + " seconds";
+        }
+        else
+            timeFormatted = seconds + " seconds";
+        return timeFormatted;
+    }
+    
+    protected String getNodeConSeconds(String nodeConnector)
+    {
+        String url = PublicStatics.NODES_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
+        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
+        mNodeConnectorsParseReply = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsParseReply.getNodeConSeconds();
     }
     
     protected String[] getNodeConBytes(String nodeConnector)
