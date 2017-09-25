@@ -76,12 +76,12 @@ public class NetworkElements
             avgLinkTrTraffic = Double.parseDouble(df.format(avgLinkTrTraffic));
             avgLinkRcTraffic = Double.parseDouble(df.format(avgLinkRcTraffic));
             
-            linksTraffic.add(nodeConnectors[i] +"  " + avgLinkTrTraffic +
+            linksTraffic.add(nodeConnectors[i] +" Tx: " + avgLinkTrTraffic +
                     //" Bps  Tx: " + nodeConTraffic[0] +
-                    " Bytes in " + formatSeconds(seconds));
-            linksTraffic.add(nodeConnectors[i] +"  " + avgLinkRcTraffic +
+                    " Bytes/s in " + formatSeconds(seconds));
+            linksTraffic.add(nodeConnectors[i] +" Rx: " + avgLinkRcTraffic +
                     //" Bps  Rx: " + nodeConTraffic[1] +
-                    " Bytes in " + formatSeconds(seconds));
+                    " Bytes/s in " + formatSeconds(seconds));
         }
         return linksTraffic.toArray(new String[0]);
     }

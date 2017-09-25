@@ -11,7 +11,9 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.UIManager;
 import org.jfree.ui.RefineryUtilities;
 import static sdnrestconfcommunicator.PublicStatics.REFRESH_TIMER;
 
@@ -93,6 +95,8 @@ public class GuiJFrame extends javax.swing.JFrame
         dropFlowsMenuItm = new javax.swing.JMenuItem();
         inspectFlowsMenuItm = new javax.swing.JMenuItem();
         installFlowsMenuItm = new javax.swing.JMenuItem();
+        reportMenu = new javax.swing.JMenu();
+        xlRepMenuItm = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -219,6 +223,18 @@ public class GuiJFrame extends javax.swing.JFrame
         flowsMenu.add(installFlowsMenuItm);
 
         jMenuBar1.add(flowsMenu);
+
+        reportMenu.setText("Reports");
+
+        xlRepMenuItm.setText("Excel Report");
+        xlRepMenuItm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                xlRepMenuItmActionPerformed(evt);
+            }
+        });
+        reportMenu.add(xlRepMenuItm);
+
+        jMenuBar1.add(reportMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -443,6 +459,17 @@ public class GuiJFrame extends javax.swing.JFrame
         printToJList(mNet.getNodeUtil(jList.getSelectedValue()),jList);
     }//GEN-LAST:event_getUtilMenuItmActionPerformed
 
+    private void xlRepMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xlRepMenuItmActionPerformed
+        // TODO add your handling code here:
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                //Turn off metal's use of bold fonts
+                UIManager.put("swing.boldMetal", Boolean.FALSE); 
+                FileChooser.createAndShowGUI();
+            }
+        });
+    }//GEN-LAST:event_xlRepMenuItmActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel controllerIpLbl;
@@ -462,10 +489,12 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JMenu linksMenu;
     private javax.swing.JPasswordField passwordFld;
     private javax.swing.JLabel passwordLbl;
+    private javax.swing.JMenu reportMenu;
     private javax.swing.JLabel tableLbl;
     private javax.swing.JTextField tableTxtFld;
     private javax.swing.JMenu topoMenu;
     private javax.swing.JLabel usernameLbl;
     private javax.swing.JTextField usernameTxtFld;
+    private javax.swing.JMenuItem xlRepMenuItm;
     // End of variables declaration//GEN-END:variables
 }
