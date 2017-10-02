@@ -12,30 +12,24 @@ package sdnrestconfcommunicator;
  
 import java.io.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import javax.swing.*;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.*;
- 
 /*
  * FileChooserDemo.java uses these files:
  *   images/Open16.gif
  *   images/Save16.gif
  */
-public class FileChooser extends JPanel //implements ActionListener 
+public class FileChooser extends JPanel
 {
-    static private final String newline = "\n";
     JButton saveButton;
-    //JTextArea log;
     JFileChooser fc;
+    public static NetworkElements net;
  
     public FileChooser() 
     {
         super(new BorderLayout());
 
-        JScrollPane logScrollPane = new JScrollPane();
  
         //Create a file chooser
         fc = new JFileChooser();
@@ -48,9 +42,10 @@ public class FileChooser extends JPanel //implements ActionListener
             if (returnVal == JFileChooser.APPROVE_OPTION) 
             {
                 String file = fc.getSelectedFile().toString();
-                CreateExcel mXL = new CreateExcel("test",file);
+                CreateExcel mXL = new CreateExcel(file,net);
             } 
     }
+    
  
     public static void createAndShowGUI() {
         //Create and set up the window.

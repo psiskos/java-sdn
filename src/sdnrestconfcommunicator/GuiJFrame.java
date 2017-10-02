@@ -227,6 +227,7 @@ public class GuiJFrame extends javax.swing.JFrame
         reportMenu.setText("Reports");
 
         xlRepMenuItm.setText("Excel Report");
+        xlRepMenuItm.setEnabled(false);
         xlRepMenuItm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 xlRepMenuItmActionPerformed(evt);
@@ -290,14 +291,17 @@ public class GuiJFrame extends javax.swing.JFrame
 
     private void getNodesMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getNodesMenuItmActionPerformed
         // TODO add your handling code here:    
-        if(mNet == null)
-        {
-            mNet = new NetworkElements(usernameTxtFld.getText(),
+
+        mNet = new NetworkElements(usernameTxtFld.getText(),
                 new String(passwordFld.getPassword()),
-                controllerIpTxtFld.getText());
-        }
+                controllerIpTxtFld.getText());            
         
-        printToJList(mNet.getTopoNodes(),jList);
+        if(mNet.getTopoNodes() != null)
+        {
+            //enables excel report button
+            xlRepMenuItm.setEnabled(true);
+            printToJList(mNet.getTopoNodes(),jList);
+        }
     }//GEN-LAST:event_getNodesMenuItmActionPerformed
 
     private void jListComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jListComponentHidden
@@ -461,6 +465,8 @@ public class GuiJFrame extends javax.swing.JFrame
 
     private void xlRepMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xlRepMenuItmActionPerformed
         // TODO add your handling code here:
+        //mNet has the network data for the excel, passed through static var
+        FileChooser.net = mNet;
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 //Turn off metal's use of bold fonts
