@@ -24,7 +24,7 @@ import static sdnrestconfcommunicator.PublicStatics.REFRESH_TIMER;
 
 public class GuiJFrame extends javax.swing.JFrame 
 {
-    NetworkElements mNet;
+    NetworkData mNet;
     String[] nodes,flows,nodeConnectors;
     /**
      * Creates new form GuiJFrame
@@ -292,7 +292,7 @@ public class GuiJFrame extends javax.swing.JFrame
     private void getNodesMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getNodesMenuItmActionPerformed
         // TODO add your handling code here:    
 
-        mNet = new NetworkElements(usernameTxtFld.getText(),
+        mNet = new NetworkData(usernameTxtFld.getText(),
                 new String(passwordFld.getPassword()),
                 controllerIpTxtFld.getText());            
         
@@ -430,7 +430,7 @@ public class GuiJFrame extends javax.swing.JFrame
         {
             String selectedNode = jList.getSelectedValue();
             String[] traRecBytesArray = mNet.getNodeConBytes(selectedNode);
-            int interfaceSpeed = mNet.getInterfaceSpeed();//kbps
+            int interfaceSpeed = mNet.getInterfaceSpeed(jList.getSelectedValue());//kbps
             
             TrafficChart  mChart = new TrafficChart(Double.parseDouble(traRecBytesArray[0]),
                     Double.parseDouble(traRecBytesArray[1]), interfaceSpeed);

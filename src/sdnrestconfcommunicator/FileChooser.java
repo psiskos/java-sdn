@@ -24,7 +24,7 @@ public class FileChooser extends JPanel
 {
     JButton saveButton;
     JFileChooser fc;
-    public static NetworkElements net;
+    public static NetworkData net;
  
     public FileChooser() 
     {
@@ -42,7 +42,7 @@ public class FileChooser extends JPanel
             if (returnVal == JFileChooser.APPROVE_OPTION) 
             {
                 String file = fc.getSelectedFile().toString();
-                CreateExcel mXL = new CreateExcel(file,net);
+                CreateExcelFromNet mXL = new CreateExcelFromNet(file,net);
             } 
     }
     

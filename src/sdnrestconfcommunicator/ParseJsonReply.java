@@ -142,6 +142,29 @@ public class ParseJsonReply
         return nodesCons;
     }
     
+    protected String[] getNodesNoHosts()
+    {
+        String[] nodesIDs = null;
+        try
+        {
+            JSONObject nodes = reply.getJSONObject("nodes");
+            JSONArray nodeArr = nodes.getJSONArray("node");
+            nodesIDs = new String[nodeArr.length()];
+            
+            //JSONObject obj = nodeArr.getJSONObject(0);
+
+            for (int i = 0; i < nodeArr.length(); i++) 
+            {
+                JSONObject jsonobject = nodeArr.getJSONObject(i);
+                nodesIDs[i] = jsonobject.getString("id");
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return nodesIDs;
+    }
+    
     protected String[] getNodeConBytes()
     {
         String[] nodesConBytes = null;

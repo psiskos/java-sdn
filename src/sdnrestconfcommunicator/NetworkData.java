@@ -7,23 +7,25 @@ package sdnrestconfcommunicator;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import org.codehaus.jettison.json.JSONObject;
+import static sdnrestconfcommunicator.PublicStatics.formatSeconds;
 
 /**
  *
  * @author pas
  */
-public class NetworkElements 
+public class NetworkData 
 {
     protected String topologyId,username,password,controllerIp;
     protected String elemUsedForPorts,elemUsedForFlows;
     protected String[] nodes,links,flowValues;
-    protected HttpJsonRequest topoJSGet,flowJSGet,installFlowJSPut,nodeConJSGet;
-    protected JSONObject jsonTopology,jsonFlows,jsonNodeConnectors;
+    protected HttpJsonRequest topoJSGet,flowJSGet,installFlowJSPut,nodeConJSGet,nodesJSGet;
+    protected JSONObject jsonTopology,jsonFlows,jsonNodeConnectors,jsonNodes;
     //each url used gets different reply and need different parse reply instance
-    ParseJsonReply mParseReply,mFlowParseReply,mNodeConnectorsParseReply;
+    ParseJsonReply mPR,mFlowsPR,mNodeConnectorsPR,mNodesPR;//parse reply
     
-    NetworkElements(String username,String password,String controllerIp)
+    NetworkData(String username,String password,String controllerIp)
     {
         this.username = username;
         this.password = password;
@@ -31,30 +33,61 @@ public class NetworkElements
         
         topoJSGet = new HttpJsonRequest();
         jsonTopology = topoJSGet.getRestconfInJson(username, password, controllerIp,PublicStatics.TOPOLOGY_URL);
-        mParseReply = new ParseJsonReply(jsonTopology);
+        mPR = new ParseJsonReply(jsonTopology);
     }
     
     protected String[] getTopoNodes()
     {
-        return mParseReply.getNodes();  
+        return mPR.getNodes();  
     }
     
     protected String[] getTopoLinks()
     {
-        return mParseReply.getLinks();  
+        return mPR.getLinks();  
     }
     
+    //":8181/restconf/operational/opendaylight-inventory:nodes/"
+    protected String[] getNodesNoHosts()
+    {
+        String url = PublicStatics.NODES_URL;//creates url
+        nodesJSGet = new HttpJsonRequest();//initialize instance
+        //gets response in json object
+        jsonNodes = nodesJSGet.getRestconfInJson(username, password, controllerIp,url);
+        //creates instance of parse class to parse json object
+        mNodesPR = new ParseJsonReply(jsonNodes);
+        
+        //remove last element which is controller config
+        String[] nodes = mNodesPR.getNodesNoHosts();
+        return Arrays.copyOf(nodes,nodes.length - 1);
+    }
+    
+    protected String[] getHosts()
+    {
+        String[] nodesNoHosts = getNodesNoHosts();
+        String[] allNodes = getTopoNodes();
+        ArrayList<String> hosts = new ArrayList<>();
+        
+        for (int i=0; i < allNodes.length;i++)
+        {
+            if (!Arrays.asList(nodesNoHosts).contains(allNodes[i]))
+                hosts.add(allNodes[i]);
+        }
+        
+        return hosts.toArray(new String[0]);
+    }
+    
+    //gets link names of selected switch
     protected String[] getNodeConnectors(String element)
     {
         elemUsedForPorts = element;
         
-        String url = PublicStatics.NODES_URL + element;//creates url
+        String url = PublicStatics.NODE_CONNECTOR_URL + element;//creates url
         nodeConJSGet = new HttpJsonRequest();//initialize instance
         //gets response in json object
         jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
         //creates instance of parse class to parse json object
-        mNodeConnectorsParseReply = new ParseJsonReply(jsonNodeConnectors);
-        return mNodeConnectorsParseReply.getNodeConnectorIDs();
+        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsPR.getNodeConnectorIDs();
     }
     
     protected String[] getNodeUtil(String element)
@@ -85,53 +118,35 @@ public class NetworkElements
         }
         return linksTraffic.toArray(new String[0]);
     }
-    
-    private String formatSeconds(int seconds)
-    {
-        String timeFormatted = null;
-        if (seconds > 3600)//hours
-        {
-            int hours = seconds / 3600;
-            int mins = (seconds % 3600) / 60;
-            int remSec = (seconds % 3600) % 60;
-            timeFormatted = hours + " hours " + mins + " minutes " + remSec + " seconds";
-        }
-        else if (seconds > 60)//minutes
-        {
-            int mins = seconds/60;
-            int remSec = seconds % 60;
-            timeFormatted = mins + " minutes " + remSec + " seconds";
-        }
-        else
-            timeFormatted = seconds + " seconds";
-        return timeFormatted;
-    }
+   
     
     protected String getNodeConSeconds(String nodeConnector)
     {
-        String url = PublicStatics.NODES_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
+        String url = PublicStatics.NODE_CONNECTOR_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
         jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
-        mNodeConnectorsParseReply = new ParseJsonReply(jsonNodeConnectors);
-        return mNodeConnectorsParseReply.getNodeConSeconds();
+        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsPR.getNodeConSeconds();
     }
     
     protected String[] getNodeConBytes(String nodeConnector)
     {
-        String url = PublicStatics.NODES_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
+        String url = PublicStatics.NODE_CONNECTOR_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
         jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
-        mNodeConnectorsParseReply = new ParseJsonReply(jsonNodeConnectors);
-        return mNodeConnectorsParseReply.getNodeConBytes();
+        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsPR.getNodeConBytes();
     }
     
-    protected int getInterfaceSpeed()
+    protected int getInterfaceSpeed(String nodeConnector)
     {
-        //mNodeConnectors will already be initialized in getNodeConBytes
-        return mNodeConnectorsParseReply.getInterfaceSpeed();
+        String url = PublicStatics.NODE_CONNECTOR_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
+        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
+        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsPR.getInterfaceSpeed();            
     }
     
     protected String getTopoID()
     {
-        return mParseReply.getTopologyID();
+        return mPR.getTopologyID();
     }
     
     protected String[] getFlows(String switchName,String table)
@@ -139,22 +154,22 @@ public class NetworkElements
         //we need switch name to perform drop//add flow so it is saved in variable
         elemUsedForFlows = switchName;
         
-        String flowsUrl = PublicStatics.NODES_URL + switchName + "/table/" + table;
+        String flowsUrl = PublicStatics.NODE_CONNECTOR_URL + switchName + "/table/" + table;
         flowJSGet = new HttpJsonRequest();
         jsonFlows = flowJSGet.getRestconfInJson(username, password, controllerIp,flowsUrl);
-        mFlowParseReply = new ParseJsonReply(jsonFlows);
+        mFlowsPR = new ParseJsonReply(jsonFlows);
         
-        return mFlowParseReply.getFlowsIDs();
+        return mFlowsPR.getFlowsIDs();
     }
     
     protected String[] getFlowsValues(String flowId)
     {
-        return mFlowParseReply.getFlowsValues(flowId);
+        return mFlowsPR.getFlowsValues(flowId);
     }
     
     protected void dropFlows(String switchName,String table,String flowId)
     {
-        String dropflowsUrl = PublicStatics.CONFIG_NODES_URL + switchName + "/table/" + table + "/flow/" + flowId;
+        String dropflowsUrl = PublicStatics.CONFIG_NODE_CONNECTOR_URL + switchName + "/table/" + table + "/flow/" + flowId;
         HttpJsonRequest dropFlow = new HttpJsonRequest();
         dropFlow.deleteRestconfInJson(username, password, controllerIp,dropflowsUrl);
     }
