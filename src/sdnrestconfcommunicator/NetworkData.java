@@ -167,6 +167,11 @@ public class NetworkData
         return mFlowsPR.getFlowsValues(flowId);
     }
     
+    protected String[] getHostValues(String hostId)//ip and mac
+    {
+        return mPR.getHostValues(hostId);
+    }
+    
     protected void dropFlows(String switchName,String table,String flowId)
     {
         String dropflowsUrl = PublicStatics.CONFIG_NODE_CONNECTOR_URL + switchName + "/table/" + table + "/flow/" + flowId;

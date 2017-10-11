@@ -98,6 +98,33 @@ public class ParseJsonReply
         return topologyId;
     }
     
+    protected String[] getHostValues(String hostId)
+    {
+        String[] hostValues = new String[2];//ip,mac
+        try
+        {
+            JSONObject netTopo = reply.getJSONObject("network-topology");
+            JSONArray topo = netTopo.getJSONArray("topology");
+            JSONObject obj = topo.getJSONObject(0);
+            JSONArray node = obj.getJSONArray("node");
+            for (int i = 0; i < node.length(); i++) 
+            {
+                JSONObject jsonobject = node.getJSONObject(i);
+                if (hostId.equals(jsonobject.getString("node-id")))
+                {
+                    JSONArray addresses = jsonobject.getJSONArray("host-tracker-service:addresses");
+                    JSONObject obj2 = addresses.getJSONObject(0);
+                    hostValues[0] = obj2.getString("mac");
+                    hostValues[1] = obj2.getString("ip");
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return hostValues;
+    }
+    
     protected String[] getNodes()
     {
         String[] nodes = null;

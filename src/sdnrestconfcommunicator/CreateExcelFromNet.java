@@ -41,7 +41,7 @@ public class CreateExcelFromNet
             ArrayList<Integer> interfaceSpeedList = new ArrayList<>();
             ArrayList<String> upTimeList = new ArrayList<>();
             
-            ///------------------------HEAD(1rst row)--------------------------
+            //Create Workbook and Sheet
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet sheet = workbook.createSheet("FirstSheet");
             
@@ -52,7 +52,7 @@ public class CreateExcelFromNet
             mFont.setBold(true);
             boldStyle.setFont(mFont);
 
-
+             ///------------------------HEAD(1rst row)--------------------------
             HSSFRow rowhead = sheet.createRow((short)0);
             Cell cell = rowhead.createCell(0);
             cell.setCellValue("Nodes");
@@ -67,7 +67,10 @@ public class CreateExcelFromNet
                 row = sheet.createRow((short)i+1);
                 row.createCell(0).setCellValue(nodes[i]);
                 
+                //get node connectors of each node
                 String[] nodeConnectors = net.getNodeConnectors(nodes[i]);
+                
+                //get values of each node connector to arraylists
                 for (int j = 0; j < nodeConnectors.length; j++)
                 {
                    nodeConnectorsList.add(nodeConnectors[j]);
@@ -78,29 +81,32 @@ public class CreateExcelFromNet
             
             //----------------------Hosts--------------------------
             row = sheet.createRow((short)sheet.getLastRowNum()+2);
-            cell = row.createCell(0);
-            cell.setCellValue("Hosts");
-            cell.setCellStyle(boldStyle);
+
+            row.createCell(0).setCellValue("Hosts");           
+            row.createCell(1).setCellValue("Mac");//mac
+            row.createCell(2).setCellValue("Ip");//ip
+            
+            styleToRow(row,boldStyle); 
             
             for(int i = 0; i<hosts.length; i++)
             {
                 row = sheet.createRow((short)sheet.getLastRowNum()+1);
-                row.createCell(0).setCellValue(hosts[i]);
+                
+                row.createCell(0).setCellValue(hosts[i]);//id/name
+                String[] hostValues = net.getHostValues(hosts[i]);//mac,ip
+                row.createCell(1).setCellValue(hostValues[0]);//mac
+                row.createCell(2).setCellValue(hostValues[1]);//ip
+                
             }
             
             //----------------------Node Connectors/Interfaces-------------------
             row = sheet.createRow((short)sheet.getLastRowNum()+2);
-            cell = row.createCell(0);
-            cell.setCellValue("Node-Connectors/Interfaces");
-            cell.setCellStyle(boldStyle);
             
-            cell = row.createCell(1);
-            cell.setCellValue("Interface Speed(kb/s)");
-            cell.setCellStyle(boldStyle);
+            row.createCell(0).setCellValue("Node-Connectors/Interfaces");
+            row.createCell(1).setCellValue("Interface Speed(kb/s)");
+            row.createCell(2).setCellValue("Active Time");
             
-            cell = row.createCell(2);
-            cell.setCellValue("Active Time");
-            cell.setCellStyle(boldStyle);
+            styleToRow(row,boldStyle);           
             
             for(int i = 0; i<nodeConnectorsList.size(); i++)
             {
@@ -127,5 +133,10 @@ public class CreateExcelFromNet
         } catch ( Exception ex ) {
             System.out.println(ex);
         }
+    }
+    
+    private void styleToRow(HSSFRow row,HSSFCellStyle style){
+        for(int i=0;i<row.getLastCellNum();i++)
+                row.getCell(i).setCellStyle(style);
     }
 }
