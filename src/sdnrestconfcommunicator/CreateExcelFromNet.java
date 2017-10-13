@@ -10,16 +10,14 @@ import java.util.ArrayList;
 import  org.apache.poi.hssf.usermodel.HSSFSheet;
 import  org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import  org.apache.poi.hssf.usermodel.HSSFRow;
-import  org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
 
 public class CreateExcelFromNet 
 {
     final private String fileName;
     final private NetworkData net;
+    final private static int MAX_NUMBER_OF_COLUMNS = 10;//used for autosize columns
     
     public CreateExcelFromNet(String fileName,NetworkData net)
     {
@@ -36,15 +34,15 @@ public class CreateExcelFromNet
         {
             String[] nodes = net.getNodesNoHosts();
             String[] hosts = net.getHosts();
-            
+
+            //node connector values(id,interface speed,uptime,mac,interface name,configuration,
+            //transmitted,received,util Tx, util Rx)
             ArrayList<String> nodeConnectorsList = new ArrayList<>();
-            ArrayList<Integer> interfaceSpeedList = new ArrayList<>();
-            ArrayList<String> upTimeList = new ArrayList<>();
+            ArrayList<String[]> nodeConValuesList = new ArrayList<>();
             
             //Create Workbook and Sheet
             HSSFWorkbook workbook = new HSSFWorkbook();
             HSSFSheet sheet = workbook.createSheet("FirstSheet");
-            
             
             //Create Bold style
             HSSFCellStyle boldStyle = workbook.createCellStyle();
@@ -54,28 +52,39 @@ public class CreateExcelFromNet
 
              ///------------------------HEAD(1rst row)--------------------------
             HSSFRow rowhead = sheet.createRow((short)0);
-            Cell cell = rowhead.createCell(0);
-            cell.setCellValue("Nodes");
-            cell.setCellStyle(boldStyle);
-            
+            rowhead.createCell(0).setCellValue("Nodes");
+            rowhead.createCell(1).setCellValue("Hardware");
+            rowhead.createCell(2).setCellValue("Software Version");
+            rowhead.createCell(3).setCellValue("Serial");
+            rowhead.createCell(4).setCellValue("Manufacturer");
+
+            styleToRow(rowhead,boldStyle); 
             //--------------------Body---------------------------
             HSSFRow row;
             
             //-----------------------Nodes-------------------------
             for (int i = 0; i<nodes.length; i++)
             {
+                //get node values(hardware,software,serial,manufacturer)
+                String[] nodeValues = net.getNodeValues(nodes[i]);
+                
+                //create excel row with node data
                 row = sheet.createRow((short)i+1);
-                row.createCell(0).setCellValue(nodes[i]);
+                row.createCell(0).setCellValue(nodes[i]);//id
+                row.createCell(1).setCellValue(nodeValues[0]);//hard
+                row.createCell(2).setCellValue(nodeValues[1]);//soft
+                row.createCell(3).setCellValue(nodeValues[2]);//serial
+                row.createCell(4).setCellValue(nodeValues[3]);//manufacturer
                 
+                               
                 //get node connectors of each node
-                String[] nodeConnectors = net.getNodeConnectors(nodes[i]);
+                String[] nodeConIDs = net.getNodeConIDs(nodes[i]);
                 
-                //get values of each node connector to arraylists
-                for (int j = 0; j < nodeConnectors.length; j++)
+                //get values of each node connector to arraylist
+                for (int j = 0; j < nodeConIDs.length; j++)
                 {
-                   nodeConnectorsList.add(nodeConnectors[j]);
-                   interfaceSpeedList.add(net.getInterfaceSpeed(nodeConnectors[j]));
-                   upTimeList.add(net.getNodeConSeconds(nodeConnectors[j]));
+                   nodeConnectorsList.add(nodeConIDs[j]);
+                   nodeConValuesList.add(net.getnNodeConValues(nodeConIDs[j],nodes[i]));
                 }                 
             }
             
@@ -101,42 +110,63 @@ public class CreateExcelFromNet
             
             //----------------------Node Connectors/Interfaces-------------------
             row = sheet.createRow((short)sheet.getLastRowNum()+2);
-            
+
             row.createCell(0).setCellValue("Node-Connectors/Interfaces");
             row.createCell(1).setCellValue("Interface Speed(kb/s)");
             row.createCell(2).setCellValue("Active Time");
-            
+            row.createCell(3).setCellValue("Mac Address");
+            row.createCell(4).setCellValue("Interface Name");
+            row.createCell(5).setCellValue("Configuration");
+            row.createCell(6).setCellValue("Transmitted Bytes");
+            row.createCell(7).setCellValue("Received Bytes");
+            row.createCell(8).setCellValue("Tx Bytes/Sec");
+            row.createCell(9).setCellValue("Rx Bytes/Sec");
+
             styleToRow(row,boldStyle);           
             
             for(int i = 0; i<nodeConnectorsList.size(); i++)
             {
+                String[] nodeConValues = nodeConValuesList.get(i);
+                
                 row = sheet.createRow((short)sheet.getLastRowNum()+1);
                 //node connector id
-                row.createCell(0).setCellValue(nodeConnectorsList.get(i));                
+                row.createCell(0).setCellValue(nodeConnectorsList.get(i));
+                
                 //interface speed
-                row.createCell(1).setCellValue(interfaceSpeedList.get(i));
+                row.createCell(1).setCellValue(nodeConValues[0]);
                 //interface active time
-                row.createCell(2).setCellValue(PublicStatics.formatSeconds(Integer.parseInt(upTimeList.get(i))));
+                row.createCell(2).setCellValue(PublicStatics.formatSeconds(Integer.parseInt(nodeConValues[1])));
+                
+                for (int j=2;j<nodeConValues.length;j++)
+                    row.createCell(j+1).setCellValue(nodeConValues[j]);
+
             }
-            //System.out.print(sheet.getLastRowNum());
             
-            //size columns to text inserted
-            sheet.autoSizeColumn(0);
-            sheet.autoSizeColumn(1);
-            sheet.autoSizeColumn(2);
+            //size columns to text size
+            autosizeColumns(sheet);
 
             //create excel file
             FileOutputStream fileOut = new FileOutputStream(fileName);
             workbook.write(fileOut);
             fileOut.close();
 
-        } catch ( Exception ex ) {
-            System.out.println(ex);
+        }
+        catch ( ArrayIndexOutOfBoundsException ex ) {
+            ex.printStackTrace();
+            System.out.println(" @create excel");
+        }
+        catch ( Exception ex ) {
+            System.out.println(ex +" @create excel");
         }
     }
     
     private void styleToRow(HSSFRow row,HSSFCellStyle style){
         for(int i=0;i<row.getLastCellNum();i++)
                 row.getCell(i).setCellStyle(style);
+    }
+    
+    private void autosizeColumns(HSSFSheet sheet){
+        for(int i=0;i<MAX_NUMBER_OF_COLUMNS;i++)
+                sheet.autoSizeColumn(i);
     }
 }

@@ -6,6 +6,7 @@
 package sdnrestconfcommunicator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
@@ -24,6 +25,9 @@ public class ParseJsonReply
     {
         this.reply = reply;        
     }
+    
+    
+    //-----------------------------FLOWS FUNCTIONS--------------------------------------------------
     
     protected String[] getFlowsIDs()
     {
@@ -79,7 +83,8 @@ public class ParseJsonReply
         return flowsValues.toArray(new String[0]);
     }
     
-    protected String getTopologyID()
+    //------------------------------------TOPOLOGY FUNCTIONS--------------------------------------------
+    protected String getTopoID()
     {
         String topologyId = "";
         
@@ -98,34 +103,7 @@ public class ParseJsonReply
         return topologyId;
     }
     
-    protected String[] getHostValues(String hostId)
-    {
-        String[] hostValues = new String[2];//ip,mac
-        try
-        {
-            JSONObject netTopo = reply.getJSONObject("network-topology");
-            JSONArray topo = netTopo.getJSONArray("topology");
-            JSONObject obj = topo.getJSONObject(0);
-            JSONArray node = obj.getJSONArray("node");
-            for (int i = 0; i < node.length(); i++) 
-            {
-                JSONObject jsonobject = node.getJSONObject(i);
-                if (hostId.equals(jsonobject.getString("node-id")))
-                {
-                    JSONArray addresses = jsonobject.getJSONArray("host-tracker-service:addresses");
-                    JSONObject obj2 = addresses.getJSONObject(0);
-                    hostValues[0] = obj2.getString("mac");
-                    hostValues[1] = obj2.getString("ip");
-                }
-            }
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        return hostValues;
-    }
-    
-    protected String[] getNodes()
+    protected String[] getTopoNodes()//nodes + hosts
     {
         String[] nodes = null;
         try
@@ -147,7 +125,51 @@ public class ParseJsonReply
         return nodes;
     }
     
-    protected String[] getNodeConnectorIDs()
+    protected String[] getTopoLinks()
+    {
+        String[] links = null;
+        try
+        {
+            JSONObject netTopo = reply.getJSONObject("network-topology");
+            JSONArray topo = netTopo.getJSONArray("topology");
+            JSONObject obj = topo.getJSONObject(0);
+            JSONArray link = obj.getJSONArray("link");
+            links = new String[link.length()];
+            for (int i = 0; i < link.length(); i++) 
+            {
+                JSONObject jsonobject = link.getJSONObject(i);
+                links[i] = jsonobject.getString("link-id");
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return links;
+    }
+    
+    protected String[] getTopoNodesNoHosts()
+    {
+        ArrayList<String> nodeIds = new ArrayList<>();
+        try
+        {
+            JSONObject nodes = reply.getJSONObject("nodes");
+            JSONArray nodeArr = nodes.getJSONArray("node");
+
+            for (int i = 0; i < nodeArr.length(); i++) 
+            {
+                JSONObject jsonobject = nodeArr.getJSONObject(i);
+                if(!jsonobject.getString("id").equals("controller-config"))
+                    nodeIds.add(jsonobject.getString("id"));
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return nodeIds.toArray(new String[0]);
+    }
+    
+    //----------------------------------NODE CONNECTOR FUNCTIONS-----------------------------
+    protected String[] getNodeConIDs()
     {
         String[] nodesCons = null;
         try
@@ -167,29 +189,6 @@ public class ParseJsonReply
             e.printStackTrace();
         }
         return nodesCons;
-    }
-    
-    protected String[] getNodesNoHosts()
-    {
-        String[] nodesIDs = null;
-        try
-        {
-            JSONObject nodes = reply.getJSONObject("nodes");
-            JSONArray nodeArr = nodes.getJSONArray("node");
-            nodesIDs = new String[nodeArr.length()];
-            
-            //JSONObject obj = nodeArr.getJSONObject(0);
-
-            for (int i = 0; i < nodeArr.length(); i++) 
-            {
-                JSONObject jsonobject = nodeArr.getJSONObject(i);
-                nodesIDs[i] = jsonobject.getString("id");
-            }
-        }
-        catch(Exception e){
-            e.printStackTrace();
-        }
-        return nodesIDs;
     }
     
     protected String[] getNodeConBytes()
@@ -232,7 +231,7 @@ public class ParseJsonReply
         return nodesConSeconds;
     }
     
-    protected int getInterfaceSpeed()
+    protected int getNodeConInterSpeed()
     {
         int interSpeed = 0;
         try
@@ -247,25 +246,111 @@ public class ParseJsonReply
         return interSpeed;
     }
     
-    protected String[] getLinks()
+    protected String getNodeConMac()
     {
-        String[] links = null;
+        String mac = null;
         try
         {
-            JSONObject netTopo = reply.getJSONObject("network-topology");
-            JSONArray topo = netTopo.getJSONArray("topology");
-            JSONObject obj = topo.getJSONObject(0);
-            JSONArray link = obj.getJSONArray("link");
-            links = new String[link.length()];
-            for (int i = 0; i < link.length(); i++) 
+            JSONArray nodeCon = reply.getJSONArray("node-connector");
+            JSONObject obj = nodeCon.getJSONObject(0);
+            mac = obj.getString("flow-node-inventory:hardware-address");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return mac;
+    }
+    
+    protected String getNodeConInterName()
+    {
+        String interfaceName = null;
+        try
+        {
+            JSONArray nodeCon = reply.getJSONArray("node-connector");
+            JSONObject obj = nodeCon.getJSONObject(0);
+            interfaceName = obj.getString("flow-node-inventory:name");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return interfaceName;
+    }
+    
+    protected String getNodeConConfig()
+    {
+        String config = null;
+        try
+        {
+            JSONArray nodeCon = reply.getJSONArray("node-connector");
+            JSONObject obj = nodeCon.getJSONObject(0);
+            config = obj.getString("flow-node-inventory:configuration");
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return config;
+    }
+    
+    
+    
+    //--------------------ELEMENT VALUES FUNCTIONS-------------------------------------
+    
+    protected String[] getNodeValues(String nodeID)
+    {
+        String[] nodeValues = new String[4];//ip,mac
+        try
+        {
+            JSONObject nodes = reply.getJSONObject("nodes");
+            JSONArray nodeArr = nodes.getJSONArray("node");
+            
+            for (int i = 0; i < nodeArr.length(); i++) 
             {
-                JSONObject jsonobject = link.getJSONObject(i);
-                links[i] = jsonobject.getString("link-id");
+                JSONObject jsonobject = nodeArr.getJSONObject(i);
+                
+                if (nodeID.equals(jsonobject.getString("id")))
+                {
+                    nodeValues[0] = jsonobject.getString("flow-node-inventory:hardware");
+                    nodeValues[1] = jsonobject.getString("flow-node-inventory:software");
+                    nodeValues[2] = jsonobject.getString("flow-node-inventory:serial-number");
+                    nodeValues[3] = jsonobject.getString("flow-node-inventory:manufacturer");
+                    break;
+                }
             }
         }
         catch(Exception e){
             e.printStackTrace();
         }
-        return links;
+        return nodeValues;
     }
+    
+    protected String[] getHostValues(String hostId)
+    {
+        String[] hostValues = new String[2];//ip,mac
+        try
+        {
+            JSONObject netTopo = reply.getJSONObject("network-topology");
+            JSONArray topo = netTopo.getJSONArray("topology");
+            JSONObject obj = topo.getJSONObject(0);
+            JSONArray node = obj.getJSONArray("node");
+            for (int i = 0; i < node.length(); i++) 
+            {
+                JSONObject jsonobject = node.getJSONObject(i);
+                if (hostId.equals(jsonobject.getString("node-id")))
+                {
+                    JSONArray addresses = jsonobject.getJSONArray("host-tracker-service:addresses");
+                    JSONObject obj2 = addresses.getJSONObject(0);
+                    hostValues[0] = obj2.getString("mac");
+                    hostValues[1] = obj2.getString("ip");
+                }
+            }
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return hostValues;
+    }
+    
+    
+    
+    
 }

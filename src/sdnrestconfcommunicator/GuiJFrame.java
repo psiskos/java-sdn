@@ -250,7 +250,6 @@ public class GuiJFrame extends javax.swing.JFrame
                         .addComponent(tableLbl)
                         .addGap(9, 9, 9)
                         .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 353, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(controllerIpLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -260,8 +259,9 @@ public class GuiJFrame extends javax.swing.JFrame
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(controllerIpTxtFld, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
                             .addComponent(usernameTxtFld)
-                            .addComponent(passwordFld))))
-                .addContainerGap(31, Short.MAX_VALUE))
+                            .addComponent(passwordFld)))
+                    .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 523, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -312,7 +312,7 @@ public class GuiJFrame extends javax.swing.JFrame
         // TODO add your handling code here:
         if (isItemSelected(jList.getSelectedValue(),nodes))
         {
-            flows = mNet.getFlows(jList.getSelectedValue(),tableTxtFld.getText());
+            flows = mNet.getFlowIDs(jList.getSelectedValue(),tableTxtFld.getText());
             printToJList(flows,jList);
         }
         else
@@ -415,7 +415,7 @@ public class GuiJFrame extends javax.swing.JFrame
         //if selected item is a node
         if(isItemSelected(jList.getSelectedValue(),nodes))
         {
-            nodeConnectors = mNet.getNodeConnectors(jList.getSelectedValue());
+            nodeConnectors = mNet.getNodeConIDs(jList.getSelectedValue());
             printToJList(nodeConnectors,jList);
         }
         else
@@ -430,7 +430,7 @@ public class GuiJFrame extends javax.swing.JFrame
         {
             String selectedNode = jList.getSelectedValue();
             String[] traRecBytesArray = mNet.getNodeConBytes(selectedNode);
-            int interfaceSpeed = mNet.getInterfaceSpeed(jList.getSelectedValue());//kbps
+            int interfaceSpeed = mNet.getNodeConInterSpeed(jList.getSelectedValue());//kbps
             
             TrafficChart  mChart = new TrafficChart(Double.parseDouble(traRecBytesArray[0]),
                     Double.parseDouble(traRecBytesArray[1]), interfaceSpeed);

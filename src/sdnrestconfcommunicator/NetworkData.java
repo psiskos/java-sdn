@@ -18,7 +18,7 @@ import static sdnrestconfcommunicator.PublicStatics.formatSeconds;
 public class NetworkData 
 {
     protected String topologyId,username,password,controllerIp;
-    protected String elemUsedForPorts,elemUsedForFlows;
+    protected String node,elemUsedForFlows;
     protected String[] nodes,links,flowValues;
     protected HttpJsonRequest topoJSGet,flowJSGet,installFlowJSPut,nodeConJSGet,nodesJSGet;
     protected JSONObject jsonTopology,jsonFlows,jsonNodeConnectors,jsonNodes;
@@ -34,31 +34,117 @@ public class NetworkData
         topoJSGet = new HttpJsonRequest();
         jsonTopology = topoJSGet.getRestconfInJson(username, password, controllerIp,PublicStatics.TOPOLOGY_URL);
         mPR = new ParseJsonReply(jsonTopology);
+        
+        nodesJSGet = new HttpJsonRequest();
+        jsonNodes = nodesJSGet.getRestconfInJson(username, password, controllerIp,PublicStatics.NODES_URL);
+        mNodesPR = new ParseJsonReply(jsonNodes);
+    }
+    
+    //--------------------------------ELEMENT VALUES----------------------------------------------------------
+    protected String[] getNodeValues(String node)//hardware,software,serial,manufacturer
+    {
+        return mNodesPR.getNodeValues(node);
+    }
+    
+    protected String[] getHostValues(String hostId)//ip and mac
+    {
+        return mPR.getHostValues(hostId);
+    }
+    
+    protected String[] getnNodeConValues(String nodeCon,String node)
+    {
+        String url = PublicStatics.NODE_CONNECTOR_URL + node + "/node-connector/" + nodeCon;//creates url
+        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
+        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
+        
+        //id,interface speed,uptime,mac,interface name,configuration,
+        //transmitted,received,avg bps Tx,avg bps Rx
+        String[] nodeConValues = new String[9];
+        
+        nodeConValues[0] = String.valueOf(mNodeConnectorsPR.getNodeConInterSpeed());
+        nodeConValues[1] = mNodeConnectorsPR.getNodeConSeconds();
+        nodeConValues[2] = mNodeConnectorsPR.getNodeConMac();
+        nodeConValues[3] = mNodeConnectorsPR.getNodeConInterName();
+        nodeConValues[4] = mNodeConnectorsPR.getNodeConConfig();
+        
+        String[] bytes = mNodeConnectorsPR.getNodeConBytes();
+        nodeConValues[5] = bytes[0];//transmitted
+        nodeConValues[6] = bytes[1];//received
+        
+        double avgLinkTrTraffic, avgLinkRcTraffic;
+        
+        //avg transmitted traffic in bytes/s of node connector
+        nodeConValues[7] = new DecimalFormat("#.##").format(Double.parseDouble(nodeConValues[5])
+                /Integer.parseInt(nodeConValues[1]));
+        
+        //avg received traffic in bytes/s of node connector
+        nodeConValues[8] = new DecimalFormat("#.##").format(Double.parseDouble(nodeConValues[6])
+                /Integer.parseInt(nodeConValues[1]));
+        
+        return nodeConValues;
+    }
+    
+    
+    //-----------------------------------NODE CONNECTOR FUNCTIONS-----------------------------------------
+    //gets link names of selected switch
+    protected String[] getNodeConIDs(String node)
+    {
+        this.node = node;
+        
+        String url = PublicStatics.NODE_CONNECTOR_URL + node;//creates url
+        nodeConJSGet = new HttpJsonRequest();//initialize instance
+        //gets response in json object
+        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
+        //creates instance of parse class to parse json object
+        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsPR.getNodeConIDs();
+    }
+   
+    
+    protected String getNodeConSeconds(String nodeConnector)
+    {
+        String url = PublicStatics.NODE_CONNECTOR_URL + node + "/node-connector/" + nodeConnector;//creates url
+        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
+        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsPR.getNodeConSeconds();
+    }
+    
+    protected String[] getNodeConBytes(String nodeConnector)
+    {
+        String url = PublicStatics.NODE_CONNECTOR_URL + node + "/node-connector/" + nodeConnector;//creates url
+        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
+        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsPR.getNodeConBytes();
+    }
+    
+    protected int getNodeConInterSpeed(String nodeConnector)
+    {
+        String url = PublicStatics.NODE_CONNECTOR_URL + node + "/node-connector/" + nodeConnector;//creates url
+        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
+        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
+        return mNodeConnectorsPR.getNodeConInterSpeed();            
+    }
+    
+    //-------------------------------TOPOLOGY FUNCTIONS----------------------------------------
+    protected String getTopoID()
+    {
+        return mPR.getTopoID();
     }
     
     protected String[] getTopoNodes()
     {
-        return mPR.getNodes();  
+        return mPR.getTopoNodes();  
     }
     
     protected String[] getTopoLinks()
     {
-        return mPR.getLinks();  
+        return mPR.getTopoLinks();  
     }
     
     //":8181/restconf/operational/opendaylight-inventory:nodes/"
     protected String[] getNodesNoHosts()
-    {
-        String url = PublicStatics.NODES_URL;//creates url
-        nodesJSGet = new HttpJsonRequest();//initialize instance
-        //gets response in json object
-        jsonNodes = nodesJSGet.getRestconfInJson(username, password, controllerIp,url);
-        //creates instance of parse class to parse json object
-        mNodesPR = new ParseJsonReply(jsonNodes);
-        
-        //remove last element which is controller config
-        String[] nodes = mNodesPR.getNodesNoHosts();
-        return Arrays.copyOf(nodes,nodes.length - 1);
+    { 
+        return mNodesPR.getTopoNodesNoHosts();
     }
     
     protected String[] getHosts()
@@ -76,80 +162,8 @@ public class NetworkData
         return hosts.toArray(new String[0]);
     }
     
-    //gets link names of selected switch
-    protected String[] getNodeConnectors(String element)
-    {
-        elemUsedForPorts = element;
-        
-        String url = PublicStatics.NODE_CONNECTOR_URL + element;//creates url
-        nodeConJSGet = new HttpJsonRequest();//initialize instance
-        //gets response in json object
-        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
-        //creates instance of parse class to parse json object
-        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
-        return mNodeConnectorsPR.getNodeConnectorIDs();
-    }
-    
-    protected String[] getNodeUtil(String element)
-    {
-        ArrayList<String> linksTraffic = new ArrayList<>();
-        String[] nodeConnectors = getNodeConnectors(element);
-        double avgLinkTrTraffic, avgLinkRcTraffic;
-        int seconds;
-        DecimalFormat df = new DecimalFormat("#.##");
-
-        for (int i=0; i < nodeConnectors.length; i++ )
-        {
-            String[] nodeConTraffic = getNodeConBytes(nodeConnectors[i]);
-            seconds = Integer.parseInt(getNodeConSeconds(nodeConnectors[i]));
-            
-            avgLinkTrTraffic = Double.parseDouble(nodeConTraffic[0]) / seconds;
-            avgLinkRcTraffic = Double.parseDouble(nodeConTraffic[1]) / seconds;
-            
-            avgLinkTrTraffic = Double.parseDouble(df.format(avgLinkTrTraffic));
-            avgLinkRcTraffic = Double.parseDouble(df.format(avgLinkRcTraffic));
-            
-            linksTraffic.add(nodeConnectors[i] +" Tx: " + avgLinkTrTraffic +
-                    //" Bps  Tx: " + nodeConTraffic[0] +
-                    " Bytes/s in " + formatSeconds(seconds));
-            linksTraffic.add(nodeConnectors[i] +" Rx: " + avgLinkRcTraffic +
-                    //" Bps  Rx: " + nodeConTraffic[1] +
-                    " Bytes/s in " + formatSeconds(seconds));
-        }
-        return linksTraffic.toArray(new String[0]);
-    }
-   
-    
-    protected String getNodeConSeconds(String nodeConnector)
-    {
-        String url = PublicStatics.NODE_CONNECTOR_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
-        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
-        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
-        return mNodeConnectorsPR.getNodeConSeconds();
-    }
-    
-    protected String[] getNodeConBytes(String nodeConnector)
-    {
-        String url = PublicStatics.NODE_CONNECTOR_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
-        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
-        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
-        return mNodeConnectorsPR.getNodeConBytes();
-    }
-    
-    protected int getInterfaceSpeed(String nodeConnector)
-    {
-        String url = PublicStatics.NODE_CONNECTOR_URL + elemUsedForPorts + "/node-connector/" + nodeConnector;//creates url
-        jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
-        mNodeConnectorsPR = new ParseJsonReply(jsonNodeConnectors);
-        return mNodeConnectorsPR.getInterfaceSpeed();            
-    }
-    
-    protected String getTopoID()
-    {
-        return mPR.getTopologyID();
-    }
-    
-    protected String[] getFlows(String switchName,String table)
+    //-----------------------------FLOWS FUNCTIONS---------------------------------------------------------
+    protected String[] getFlowIDs(String switchName,String table)
     {
         //we need switch name to perform drop//add flow so it is saved in variable
         elemUsedForFlows = switchName;
@@ -167,16 +181,39 @@ public class NetworkData
         return mFlowsPR.getFlowsValues(flowId);
     }
     
-    protected String[] getHostValues(String hostId)//ip and mac
-    {
-        return mPR.getHostValues(hostId);
-    }
-    
     protected void dropFlows(String switchName,String table,String flowId)
     {
         String dropflowsUrl = PublicStatics.CONFIG_NODE_CONNECTOR_URL + switchName + "/table/" + table + "/flow/" + flowId;
         HttpJsonRequest dropFlow = new HttpJsonRequest();
         dropFlow.deleteRestconfInJson(username, password, controllerIp,dropflowsUrl);
+    }
+    
+    //---------------------------------------UTILITY FUNCTIONS-----------------------------------
+    protected String[] getNodeUtil(String node)
+    {
+        ArrayList<String> linksTraffic = new ArrayList<>();
+        String[] nodeConnectors = getNodeConIDs(node);
+        double avgLinkTrTraffic, avgLinkRcTraffic;
+        int seconds;
+        DecimalFormat df = new DecimalFormat("#.##");
+
+        for (int i=0; i < nodeConnectors.length; i++ )
+        {
+            String[] nodeConTraffic = getNodeConBytes(nodeConnectors[i]);
+            seconds = Integer.parseInt(getNodeConSeconds(nodeConnectors[i]));
+            
+            avgLinkTrTraffic = Double.parseDouble(nodeConTraffic[0]) / seconds;
+            avgLinkRcTraffic = Double.parseDouble(nodeConTraffic[1]) / seconds;
+            
+            avgLinkTrTraffic = Double.parseDouble(df.format(avgLinkTrTraffic));
+            avgLinkRcTraffic = Double.parseDouble(df.format(avgLinkRcTraffic));
+            
+            linksTraffic.add(nodeConnectors[i] +" Tx: " + avgLinkTrTraffic +
+                    " Bytes/s in " + formatSeconds(seconds));
+            linksTraffic.add(nodeConnectors[i] +" Rx: " + avgLinkRcTraffic +
+                    " Bytes/s in " + formatSeconds(seconds));
+        }
+        return linksTraffic.toArray(new String[0]);
     }
     
 }
