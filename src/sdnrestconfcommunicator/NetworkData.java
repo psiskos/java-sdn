@@ -25,18 +25,18 @@ public class NetworkData
     //each url used gets different reply and need different parse reply instance
     ParseJsonReply mPR,mFlowsPR,mNodeConnectorsPR,mNodesPR;//parse reply
     
-    NetworkData(String username,String password,String controllerIp)
+    NetworkData(String username,String password,String controllerIp,String port)
     {
         this.username = username;
         this.password = password;
-        this.controllerIp = controllerIp;
+        this.controllerIp = controllerIp + ":" + port;
         
         topoJSGet = new HttpJsonRequest();
-        jsonTopology = topoJSGet.getRestconfInJson(username, password, controllerIp,PublicStatics.TOPOLOGY_URL);
+        jsonTopology = topoJSGet.getRestconfInJson(this.username, this.password, this.controllerIp,PublicStatics.TOPOLOGY_URL);
         mPR = new ParseJsonReply(jsonTopology);
         
         nodesJSGet = new HttpJsonRequest();
-        jsonNodes = nodesJSGet.getRestconfInJson(username, password, controllerIp,PublicStatics.NODES_URL);
+        jsonNodes = nodesJSGet.getRestconfInJson(this.username, this.password, this.controllerIp,PublicStatics.NODES_URL);
         mNodesPR = new ParseJsonReply(jsonNodes);
     }
     

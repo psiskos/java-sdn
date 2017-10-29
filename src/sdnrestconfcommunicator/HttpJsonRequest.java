@@ -132,7 +132,6 @@ public class HttpJsonRequest
             }
             baseURL = controllerIP + baseURL;
 
-            // Create URL = base URL + container
             URL url = new URL(baseURL);
 
             // Create authentication string and encode it to Base64

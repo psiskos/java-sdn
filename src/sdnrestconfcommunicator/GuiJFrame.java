@@ -74,15 +74,17 @@ public class GuiJFrame extends javax.swing.JFrame
     private void initComponents() {
 
         controllerIpTxtFld = new javax.swing.JTextField();
+        portTxtFld = new javax.swing.JTextField();
         usernameTxtFld = new javax.swing.JTextField();
+        passwordFld = new javax.swing.JPasswordField();
         controllerIpLbl = new javax.swing.JLabel();
+        portLbl = new javax.swing.JLabel();
         usernameLbl = new javax.swing.JLabel();
         passwordLbl = new javax.swing.JLabel();
-        passwordFld = new javax.swing.JPasswordField();
+        tableLbl = new javax.swing.JLabel();
         jScrollPane = new javax.swing.JScrollPane();
         jList = new javax.swing.JList<>();
         tableTxtFld = new javax.swing.JTextField();
-        tableLbl = new javax.swing.JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
         topoMenu = new javax.swing.JMenu();
         getNodesMenuItm = new javax.swing.JMenuItem();
@@ -102,15 +104,22 @@ public class GuiJFrame extends javax.swing.JFrame
 
         controllerIpTxtFld.setText("127.0.0.1");
 
+        portTxtFld.setText("8181");
+
         usernameTxtFld.setText("admin");
 
+        passwordFld.setText("admin");
+
         controllerIpLbl.setText("Controller IP");
+
+        portLbl.setText("Port");
 
         usernameLbl.setText("Username");
 
         passwordLbl.setText("Password");
 
-        passwordFld.setText("admin");
+        tableLbl.setText("Table:");
+        tableLbl.setEnabled(false);
 
         jList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jList.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -131,9 +140,6 @@ public class GuiJFrame extends javax.swing.JFrame
                 tableTxtFldActionPerformed(evt);
             }
         });
-
-        tableLbl.setText("Table:");
-        tableLbl.setEnabled(false);
 
         topoMenu.setText("Topology");
 
@@ -247,43 +253,53 @@ public class GuiJFrame extends javax.swing.JFrame
                 .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(controllerIpLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addGroup(layout.createSequentialGroup()
+                                    .addComponent(portLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addGap(153, 153, 153))
+                                .addComponent(usernameLbl))
+                            .addComponent(passwordLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addComponent(passwordFld, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(usernameTxtFld, javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(controllerIpTxtFld, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
+                            .addComponent(portTxtFld)))
+                    .addGroup(layout.createSequentialGroup()
                         .addComponent(tableLbl)
                         .addGap(9, 9, 9)
                         .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(controllerIpLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(usernameLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(passwordLbl, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(controllerIpTxtFld, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
-                            .addComponent(usernameTxtFld)
-                            .addComponent(passwordFld)))
                     .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 523, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(38, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGap(26, 26, 26)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(controllerIpLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(controllerIpTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(usernameTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(usernameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(portTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(portLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(usernameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(usernameTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(passwordLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tableLbl))
-                .addGap(19, 19, 19)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(57, 57, 57))
+                .addContainerGap(60, Short.MAX_VALUE))
         );
 
         pack();
@@ -294,7 +310,8 @@ public class GuiJFrame extends javax.swing.JFrame
 
         mNet = new NetworkData(usernameTxtFld.getText(),
                 new String(passwordFld.getPassword()),
-                controllerIpTxtFld.getText());            
+                controllerIpTxtFld.getText(),
+                portTxtFld.getText());            
         
         if(mNet.getTopoNodes() != null)
         {
@@ -495,6 +512,8 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JMenu linksMenu;
     private javax.swing.JPasswordField passwordFld;
     private javax.swing.JLabel passwordLbl;
+    private javax.swing.JLabel portLbl;
+    private javax.swing.JTextField portTxtFld;
     private javax.swing.JMenu reportMenu;
     private javax.swing.JLabel tableLbl;
     private javax.swing.JTextField tableTxtFld;
