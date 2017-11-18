@@ -148,6 +148,7 @@ public class HttpJsonRequest
             connection.setRequestProperty("Authorization", "Basic "
                     + encodedAuthStr);
             connection.setRequestProperty("Accept", "application/json");
+            callStatus = connection.getResponseCode();
 
             // Get the response from connection's inputStream
             InputStream content = connection.getInputStream();

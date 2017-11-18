@@ -18,7 +18,8 @@ public class PublicStatics
     final public static String CONFIG_NODE_CONNECTOR_URL = "/restconf/config/opendaylight-inventory:nodes/node/";
     
     //global static vars
-    final public static long REFRESH_TIMER = 1;//seconds
+    final public static long GRAPH_REFRESH_TIME = 1;//seconds
+    final public static long CONNECTION_REFRESH_TIME = 30;//seconds
     //times that thread waits before drawing if rates are 0
     final public static long NO_DRAW_THRESHOLD = 3;
     final public static double CONGESTION_THRESHOLD = 85;//percentage

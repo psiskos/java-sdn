@@ -17,8 +17,9 @@ import static sdnrestconfcommunicator.PublicStatics.formatSeconds;
  */
 public class NetworkData 
 {
+    protected boolean isConnected;
     protected String topologyId,username,password,controllerIp;
-    protected String node,elemUsedForFlows;
+    protected String elemUsedForFlows;
     protected String[] nodes,links,flowValues;
     protected HttpJsonRequest topoJSGet,flowJSGet,installFlowJSPut,nodeConJSGet,nodesJSGet;
     protected JSONObject jsonTopology,jsonFlows,jsonNodeConnectors,jsonNodes;
@@ -38,6 +39,13 @@ public class NetworkData
         nodesJSGet = new HttpJsonRequest();
         jsonNodes = nodesJSGet.getRestconfInJson(this.username, this.password, this.controllerIp,PublicStatics.NODES_URL);
         mNodesPR = new ParseJsonReply(jsonNodes);
+        
+        isConnected = getConnStatus();
+        
+    }
+    
+    private boolean getConnStatus(){
+        return (topoJSGet.callStatus == 201 || topoJSGet.callStatus == 200);
     }
     
     //--------------------------------ELEMENT VALUES----------------------------------------------------------
@@ -51,7 +59,7 @@ public class NetworkData
         return mPR.getHostValues(hostId);
     }
     
-    protected String[] getnNodeConValues(String nodeCon,String node)
+    protected String[] getNodeConValues(String nodeCon,String node)
     {
         String url = PublicStatics.NODE_CONNECTOR_URL + node + "/node-connector/" + nodeCon;//creates url
         jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
@@ -88,9 +96,7 @@ public class NetworkData
     //-----------------------------------NODE CONNECTOR FUNCTIONS-----------------------------------------
     //gets link names of selected switch
     protected String[] getNodeConIDs(String node)
-    {
-        this.node = node;
-        
+    {        
         String url = PublicStatics.NODE_CONNECTOR_URL + node;//creates url
         nodeConJSGet = new HttpJsonRequest();//initialize instance
         //gets response in json object
@@ -101,7 +107,7 @@ public class NetworkData
     }
    
     
-    protected String getNodeConSeconds(String nodeConnector)
+    protected String getNodeConSeconds(String nodeConnector,String node)
     {
         String url = PublicStatics.NODE_CONNECTOR_URL + node + "/node-connector/" + nodeConnector;//creates url
         jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
@@ -109,7 +115,7 @@ public class NetworkData
         return mNodeConnectorsPR.getNodeConSeconds();
     }
     
-    protected String[] getNodeConBytes(String nodeConnector)
+    protected String[] getNodeConBytes(String nodeConnector,String node)
     {
         String url = PublicStatics.NODE_CONNECTOR_URL + node + "/node-connector/" + nodeConnector;//creates url
         jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
@@ -117,7 +123,7 @@ public class NetworkData
         return mNodeConnectorsPR.getNodeConBytes();
     }
     
-    protected int getNodeConInterSpeed(String nodeConnector)
+    protected int getNodeConInterSpeed(String nodeConnector, String node)
     {
         String url = PublicStatics.NODE_CONNECTOR_URL + node + "/node-connector/" + nodeConnector;//creates url
         jsonNodeConnectors = nodeConJSGet.getRestconfInJson(username, password, controllerIp,url);
@@ -181,11 +187,12 @@ public class NetworkData
         return mFlowsPR.getFlowsValues(flowId);
     }
     
-    protected void dropFlows(String switchName,String table,String flowId)
+    protected boolean dropFlows(String switchName,String table,String flowId)
     {
         String dropflowsUrl = PublicStatics.CONFIG_NODE_CONNECTOR_URL + switchName + "/table/" + table + "/flow/" + flowId;
         HttpJsonRequest dropFlow = new HttpJsonRequest();
-        dropFlow.deleteRestconfInJson(username, password, controllerIp,dropflowsUrl);
+        //returns true if http response is 200 or 201
+        return (dropFlow.deleteRestconfInJson(username, password, controllerIp,dropflowsUrl));
     }
     
     //---------------------------------------UTILITY FUNCTIONS-----------------------------------
@@ -199,8 +206,8 @@ public class NetworkData
 
         for (int i=0; i < nodeConnectors.length; i++ )
         {
-            String[] nodeConTraffic = getNodeConBytes(nodeConnectors[i]);
-            seconds = Integer.parseInt(getNodeConSeconds(nodeConnectors[i]));
+            String[] nodeConTraffic = getNodeConBytes(nodeConnectors[i],node);
+            seconds = Integer.parseInt(getNodeConSeconds(nodeConnectors[i],node));
             
             avgLinkTrTraffic = Double.parseDouble(nodeConTraffic[0]) / seconds;
             avgLinkRcTraffic = Double.parseDouble(nodeConTraffic[1]) / seconds;

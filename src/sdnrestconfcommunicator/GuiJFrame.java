@@ -12,10 +12,9 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 import javax.swing.UIManager;
-import org.jfree.ui.RefineryUtilities;
-import static sdnrestconfcommunicator.PublicStatics.REFRESH_TIMER;
+import static sdnrestconfcommunicator.PublicStatics.CONNECTION_REFRESH_TIME;
+import static sdnrestconfcommunicator.PublicStatics.GRAPH_REFRESH_TIME;
 
 /**
  *
@@ -25,6 +24,7 @@ import static sdnrestconfcommunicator.PublicStatics.REFRESH_TIMER;
 public class GuiJFrame extends javax.swing.JFrame 
 {
     NetworkData mNet;
+    String selectedNode = null,selectedNodeConnector;
     String[] nodes,flows,nodeConnectors;
     /**
      * Creates new form GuiJFrame
@@ -83,19 +83,26 @@ public class GuiJFrame extends javax.swing.JFrame
         passwordLbl = new javax.swing.JLabel();
         tableLbl = new javax.swing.JLabel();
         jScrollPane = new javax.swing.JScrollPane();
-        jList = new javax.swing.JList<>();
+        flowsList = new javax.swing.JList<>();
         tableTxtFld = new javax.swing.JTextField();
+        connectionLabel = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        nodesList = new javax.swing.JList<>();
+        nodesLbl = new javax.swing.JLabel();
+        nodeConnectorsLbl = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        nodeConnectorsList = new javax.swing.JList<>();
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        generalList = new javax.swing.JList<>();
         jMenuBar1 = new javax.swing.JMenuBar();
         topoMenu = new javax.swing.JMenu();
-        getNodesMenuItm = new javax.swing.JMenuItem();
-        linksMenu = new javax.swing.JMenu();
-        getLinksMenuItm = new javax.swing.JMenuItem();
-        getLinkTrafficMenuItm = new javax.swing.JMenuItem();
+        connectionMenuItm = new javax.swing.JMenuItem();
+        trafficMenu = new javax.swing.JMenu();
+        getInterTrafficMenuItm = new javax.swing.JMenuItem();
         getUtilMenuItm = new javax.swing.JMenuItem();
         flowsMenu = new javax.swing.JMenu();
-        getFlowsMenuItm = new javax.swing.JMenuItem();
         dropFlowsMenuItm = new javax.swing.JMenuItem();
-        inspectFlowsMenuItm = new javax.swing.JMenuItem();
         installFlowsMenuItm = new javax.swing.JMenuItem();
         reportMenu = new javax.swing.JMenu();
         xlRepMenuItm = new javax.swing.JMenuItem();
@@ -121,18 +128,18 @@ public class GuiJFrame extends javax.swing.JFrame
         tableLbl.setText("Table:");
         tableLbl.setEnabled(false);
 
-        jList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        jList.addMouseListener(new java.awt.event.MouseAdapter() {
+        flowsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        flowsList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jListMouseClicked(evt);
+                flowsListMouseClicked(evt);
             }
         });
-        jList.addComponentListener(new java.awt.event.ComponentAdapter() {
+        flowsList.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentHidden(java.awt.event.ComponentEvent evt) {
-                jListComponentHidden(evt);
+                flowsListComponentHidden(evt);
             }
         });
-        jScrollPane.setViewportView(jList);
+        jScrollPane.setViewportView(flowsList);
 
         tableTxtFld.setText("0");
         tableTxtFld.addActionListener(new java.awt.event.ActionListener() {
@@ -141,37 +148,75 @@ public class GuiJFrame extends javax.swing.JFrame
             }
         });
 
-        topoMenu.setText("Topology");
+        connectionLabel.setText("No connection");
 
-        getNodesMenuItm.setText("Get Nodes");
-        getNodesMenuItm.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getNodesMenuItmActionPerformed(evt);
+        nodesList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        nodesList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                nodesListMouseClicked(evt);
             }
         });
-        topoMenu.add(getNodesMenuItm);
+        nodesList.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                nodesListComponentHidden(evt);
+            }
+        });
+        jScrollPane1.setViewportView(nodesList);
+
+        nodesLbl.setText("Nodes");
+
+        nodeConnectorsLbl.setText("Interfaces");
+
+        nodeConnectorsList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        nodeConnectorsList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                nodeConnectorsListMouseClicked(evt);
+            }
+        });
+        nodeConnectorsList.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                nodeConnectorsListComponentHidden(evt);
+            }
+        });
+        jScrollPane2.setViewportView(nodeConnectorsList);
+
+        jLabel1.setText("Flows");
+
+        generalList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        generalList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                generalListMouseClicked(evt);
+            }
+        });
+        generalList.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentHidden(java.awt.event.ComponentEvent evt) {
+                generalListComponentHidden(evt);
+            }
+        });
+        jScrollPane3.setViewportView(generalList);
+
+        topoMenu.setText("Topology");
+
+        connectionMenuItm.setText("Connect");
+        connectionMenuItm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                connectionMenuItmActionPerformed(evt);
+            }
+        });
+        topoMenu.add(connectionMenuItm);
 
         jMenuBar1.add(topoMenu);
 
-        linksMenu.setText("Links");
+        trafficMenu.setText("Traffic");
 
-        getLinksMenuItm.setText("Get Node Links");
-        getLinksMenuItm.setEnabled(false);
-        getLinksMenuItm.addActionListener(new java.awt.event.ActionListener() {
+        getInterTrafficMenuItm.setText("Get Interface Traffic");
+        getInterTrafficMenuItm.setEnabled(false);
+        getInterTrafficMenuItm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getLinksMenuItmActionPerformed(evt);
+                getInterTrafficMenuItmActionPerformed(evt);
             }
         });
-        linksMenu.add(getLinksMenuItm);
-
-        getLinkTrafficMenuItm.setText("Get Link Traffic");
-        getLinkTrafficMenuItm.setEnabled(false);
-        getLinkTrafficMenuItm.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getLinkTrafficMenuItmActionPerformed(evt);
-            }
-        });
-        linksMenu.add(getLinkTrafficMenuItm);
+        trafficMenu.add(getInterTrafficMenuItm);
 
         getUtilMenuItm.setText("Get Node Utilization");
         getUtilMenuItm.setEnabled(false);
@@ -180,25 +225,11 @@ public class GuiJFrame extends javax.swing.JFrame
                 getUtilMenuItmActionPerformed(evt);
             }
         });
-        linksMenu.add(getUtilMenuItm);
+        trafficMenu.add(getUtilMenuItm);
 
-        jMenuBar1.add(linksMenu);
+        jMenuBar1.add(trafficMenu);
 
         flowsMenu.setText("Flows");
-
-        getFlowsMenuItm.setText("Get Flows");
-        getFlowsMenuItm.setEnabled(false);
-        getFlowsMenuItm.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                getFlowsMenuItmMouseClicked(evt);
-            }
-        });
-        getFlowsMenuItm.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                getFlowsMenuItmActionPerformed(evt);
-            }
-        });
-        flowsMenu.add(getFlowsMenuItm);
 
         dropFlowsMenuItm.setText("Drop Flow");
         dropFlowsMenuItm.setEnabled(false);
@@ -209,15 +240,6 @@ public class GuiJFrame extends javax.swing.JFrame
             }
         });
         flowsMenu.add(dropFlowsMenuItm);
-
-        inspectFlowsMenuItm.setText("Inspect Flow");
-        inspectFlowsMenuItm.setEnabled(false);
-        inspectFlowsMenuItm.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                inspectFlowsMenuItmActionPerformed(evt);
-            }
-        });
-        flowsMenu.add(inspectFlowsMenuItm);
 
         installFlowsMenuItm.setText("Install Flow");
         installFlowsMenuItm.setEnabled(false);
@@ -250,34 +272,51 @@ public class GuiJFrame extends javax.swing.JFrame
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(29, 29, 29)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(30, 30, 30)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(64, 64, 64)
+                        .addComponent(nodesLbl)
+                        .addGap(133, 133, 133)
+                        .addComponent(nodeConnectorsLbl)
+                        .addGap(134, 134, 134)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29)
+                        .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(controllerIpLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addGroup(layout.createSequentialGroup()
-                                    .addComponent(portLbl, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addGap(153, 153, 153))
-                                .addComponent(usernameLbl))
-                            .addComponent(passwordLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(portLbl)
+                                        .addComponent(usernameLbl))
+                                    .addGap(112, 112, 112)))
+                            .addComponent(passwordLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tableLbl)
+                                .addGap(9, 9, 9)
+                                .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                             .addComponent(passwordFld, javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(usernameTxtFld, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(controllerIpTxtFld, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
-                            .addComponent(portTxtFld)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(tableLbl)
-                        .addGap(9, 9, 9)
-                        .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 523, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(38, Short.MAX_VALUE))
+                            .addComponent(controllerIpTxtFld)
+                            .addComponent(portTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, 92, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(connectionLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane3))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(26, 26, 26)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(connectionLabel)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(controllerIpLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(controllerIpTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -290,106 +329,86 @@ public class GuiJFrame extends javax.swing.JFrame
                     .addComponent(usernameLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(usernameTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(passwordLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(passwordFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(passwordLbl, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tableLbl))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(tableTxtFld, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tableLbl))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(nodesLbl)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(nodeConnectorsLbl)
+                        .addComponent(jLabel1)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(60, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(86, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void getNodesMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getNodesMenuItmActionPerformed
-        // TODO add your handling code here:    
-
-        mNet = new NetworkData(usernameTxtFld.getText(),
-                new String(passwordFld.getPassword()),
-                controllerIpTxtFld.getText(),
-                portTxtFld.getText());            
+    private void connectionMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectionMenuItmActionPerformed
+        // TODO add your handling code here:
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+            Runnable updateRunnable = new Runnable() 
+            {
+                public void run() 
+                {
+                    mNet = new NetworkData(usernameTxtFld.getText(),
+                    new String(passwordFld.getPassword()),
+                    controllerIpTxtFld.getText(),
+                    portTxtFld.getText());            
         
-        if(mNet.getTopoNodes() != null)
-        {
-            //enables excel report button
-            xlRepMenuItm.setEnabled(true);
-            printToJList(mNet.getTopoNodes(),jList);
-        }
-    }//GEN-LAST:event_getNodesMenuItmActionPerformed
+                    if(mNet.isConnected)
+                    {
+                        //enables excel report button
+                        xlRepMenuItm.setEnabled(true);
+                        printToJList(mNet.getTopoNodes(),nodesList);
 
-    private void jListComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_jListComponentHidden
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jListComponentHidden
+                        //changes connection label
+                        connectionLabel.setText("Connection established");
+                    }
+                    else
+                        connectionLabel.setText("<html><font color=\"red\">No Connection!</font></html>");
+                }
+            };            
+            
+            executor.scheduleAtFixedRate(updateRunnable, 0,CONNECTION_REFRESH_TIME, TimeUnit.SECONDS);       
+    }//GEN-LAST:event_connectionMenuItmActionPerformed
 
-    private void getFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getFlowsMenuItmActionPerformed
+    private void flowsListComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_flowsListComponentHidden
         // TODO add your handling code here:
-        if (isItemSelected(jList.getSelectedValue(),nodes))
+    }//GEN-LAST:event_flowsListComponentHidden
+
+    private void flowsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_flowsListMouseClicked
+        // TODO add your handling code here:       
+        //is flow selected
+        if(isItemSelected(flowsList.getSelectedValue(),flows) && isItemSelected(nodesList.getSelectedValue(),nodes))
         {
-            flows = mNet.getFlowIDs(jList.getSelectedValue(),tableTxtFld.getText());
-            printToJList(flows,jList);
+            installFlowsMenuItm.setEnabled(true);
+            dropFlowsMenuItm.setEnabled(true);
+            tableLbl.setVisible(true);
+            tableTxtFld.setVisible(true);
+                
+            String [] flowValues = mNet.getFlowsValues(flowsList.getSelectedValue());
+            //removes []{} symbols
+            //prints flow attributes
+            for (int i=0; i<flowValues.length; i++)
+               flowValues[i] = flowValues[i].replaceAll("[\\{\\]\\[\"\\}]", "");      
+            printToJList((flowValues),generalList);              
         }
         else
-            JOptionPane.showMessageDialog(null, "Select a node!!");
-        
-    }//GEN-LAST:event_getFlowsMenuItmActionPerformed
-
-    private void jListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jListMouseClicked
-        // TODO add your handling code here:
-        nodes = mNet.getTopoNodes();
-        
-        //enables get flows,table label and textfield only if selected item is a node
-        getFlowsMenuItm.setEnabled(false);
-        installFlowsMenuItm.setEnabled(false);
-        dropFlowsMenuItm.setEnabled(false);
-        inspectFlowsMenuItm.setEnabled(false);
-        getLinksMenuItm.setEnabled(false);
-        getLinkTrafficMenuItm.setEnabled(false);
-        getUtilMenuItm.setEnabled(false);
-        
-        tableLbl.setVisible(false);
-        tableTxtFld.setVisible(false);
-
-        
-        //is node selected
-        if(isItemSelected(jList.getSelectedValue(),nodes)){
-                getFlowsMenuItm.setEnabled(true);
-                installFlowsMenuItm.setEnabled(true);
-                tableLbl.setVisible(true);
-                tableTxtFld.setVisible(true);
-                getLinksMenuItm.setEnabled(true);
-                getUtilMenuItm.setEnabled(true);
-        }
-
-        //is flow selected
-        if(flows!= null)
-        {
-            //is flow selected
-            if(isItemSelected(jList.getSelectedValue(),flows))
-            {
-                dropFlowsMenuItm.setEnabled(true);
-                inspectFlowsMenuItm.setEnabled(true);
-                tableLbl.setVisible(true);
-                tableTxtFld.setVisible(true);        
-            }                  
-        }
-        //is node-connector/link selected
-        if(nodeConnectors!= null)
-        {
-            //is flow selected
-            if(isItemSelected(jList.getSelectedValue(),nodeConnectors))
-            {
-                getLinkTrafficMenuItm.setEnabled(true);
-            }                  
-        }
-    }//GEN-LAST:event_jListMouseClicked
-
-    private void getFlowsMenuItmMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_getFlowsMenuItmMouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_getFlowsMenuItmMouseClicked
+            JOptionPane.showMessageDialog(null, "Select a node and a flow!!");
+    }//GEN-LAST:event_flowsListMouseClicked
 
     private void tableTxtFldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tableTxtFldActionPerformed
         // TODO add your handling code here:
@@ -397,57 +416,41 @@ public class GuiJFrame extends javax.swing.JFrame
 
     private void dropFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dropFlowsMenuItmActionPerformed
         // TODO add your handling code here:
-        if (isItemSelected(jList.getSelectedValue(),flows))
-            mNet.dropFlows(mNet.elemUsedForFlows, tableTxtFld.getText(), jList.getSelectedValue());
+        if (isItemSelected(flowsList.getSelectedValue(),flows))
+        {
+            if(mNet.dropFlows(mNet.elemUsedForFlows, tableTxtFld.getText(), flowsList.getSelectedValue()))
+                JOptionPane.showMessageDialog(null, "Flow successfully droped");
+            else
+                JOptionPane.showMessageDialog(null, "Error received, flow not droped");
+        }
         else
             JOptionPane.showMessageDialog(null, "Select a flow!!");      
     }//GEN-LAST:event_dropFlowsMenuItmActionPerformed
 
-    private void inspectFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inspectFlowsMenuItmActionPerformed
-        // TODO add your handling code here:
-        if (isItemSelected(jList.getSelectedValue(),flows))
-        {
-            String [] flowValues = mNet.getFlowsValues(jList.getSelectedValue());
-            //removes []{} symbols
-            for (int i=0; i<flowValues.length; i++)
-               flowValues[i] = flowValues[i].replaceAll("[\\{\\]\\[\"\\}]", "");      
-            printToJList((flowValues),jList);
-        }
-        else
-            JOptionPane.showMessageDialog(null, "Select a flow!!");  
-        
-    }//GEN-LAST:event_inspectFlowsMenuItmActionPerformed
-
     private void installFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installFlowsMenuItmActionPerformed
         // TODO add your handling code here:    
-        if (isItemSelected(jList.getSelectedValue(),nodes))
-            new InstallFlowJFrame(jList.getSelectedValue(), mNet.username, mNet.password, mNet.controllerIp).setVisible(true);
+        if (isItemSelected(nodesList.getSelectedValue(),nodes))
+            new InstallFlowJFrame(flowsList.getSelectedValue(), mNet.username, mNet.password, mNet.controllerIp).setVisible(true);
         else
             JOptionPane.showMessageDialog(null, "Select a node!!");
         
     }//GEN-LAST:event_installFlowsMenuItmActionPerformed
 
-    private void getLinksMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getLinksMenuItmActionPerformed
-        // TODO add your handling code here:
-        //if selected item is a node
-        if(isItemSelected(jList.getSelectedValue(),nodes))
-        {
-            nodeConnectors = mNet.getNodeConIDs(jList.getSelectedValue());
-            printToJList(nodeConnectors,jList);
-        }
-        else
-            JOptionPane.showMessageDialog(null, "Select a node!!");
-    }//GEN-LAST:event_getLinksMenuItmActionPerformed
-
-    private void getLinkTrafficMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getLinkTrafficMenuItmActionPerformed
+    private void getInterTrafficMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getInterTrafficMenuItmActionPerformed
         // TODO add your handling code here:
         
         
-        if(isItemSelected(jList.getSelectedValue(),nodeConnectors))
+        if(isItemSelected(nodeConnectorsList.getSelectedValue(),nodeConnectors))
         {
-            String selectedNode = jList.getSelectedValue();
-            String[] traRecBytesArray = mNet.getNodeConBytes(selectedNode);
-            int interfaceSpeed = mNet.getNodeConInterSpeed(jList.getSelectedValue());//kbps
+            
+            if (isItemSelected(nodesList.getSelectedValue(),nodes))
+                selectedNode = nodesList.getSelectedValue();
+            else
+                JOptionPane.showMessageDialog(null, "Select a node!!");
+            
+            selectedNodeConnector = nodeConnectorsList.getSelectedValue();
+            String[] traRecBytesArray = mNet.getNodeConBytes(selectedNodeConnector,selectedNode);
+            int interfaceSpeed = mNet.getNodeConInterSpeed(selectedNodeConnector,selectedNode);//kbps
             
             TrafficChart  mChart = new TrafficChart(Double.parseDouble(traRecBytesArray[0]),
                     Double.parseDouble(traRecBytesArray[1]), interfaceSpeed);
@@ -457,7 +460,7 @@ public class GuiJFrame extends javax.swing.JFrame
             Runnable updateRunnable = new Runnable() {
                 public void run() 
                 {
-                    String[] tmp = mNet.getNodeConBytes(selectedNode);
+                    String[] tmp = mNet.getNodeConBytes(selectedNodeConnector,selectedNode);
 //                    System.out.println(tmp[0]);
 //                    System.out.println(tmp[1]);
                     mChart.updateGraph(Double.parseDouble(tmp[0]),Double.parseDouble(tmp[1]),interfaceSpeed);
@@ -467,17 +470,18 @@ public class GuiJFrame extends javax.swing.JFrame
                 }
             };            
             
-            executor.scheduleAtFixedRate(updateRunnable, 0, REFRESH_TIMER, TimeUnit.SECONDS);
-
-            
+            executor.scheduleAtFixedRate(updateRunnable, 0, GRAPH_REFRESH_TIME, TimeUnit.SECONDS);            
         }
         else
-            JOptionPane.showMessageDialog(null, "Select a port/node-connector!!");
-    }//GEN-LAST:event_getLinkTrafficMenuItmActionPerformed
+            JOptionPane.showMessageDialog(null, "Select an interface/node-connector!!");
+    }//GEN-LAST:event_getInterTrafficMenuItmActionPerformed
 
     private void getUtilMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getUtilMenuItmActionPerformed
         // TODO add your handling code here:
-        printToJList(mNet.getNodeUtil(jList.getSelectedValue()),jList);
+        if (isItemSelected(nodesList.getSelectedValue(),mNet.getNodesNoHosts()))
+                printToJList(mNet.getNodeUtil(nodesList.getSelectedValue()),generalList);
+        else
+            JOptionPane.showMessageDialog(null, "Select a node(no host)!!");
     }//GEN-LAST:event_getUtilMenuItmActionPerformed
 
     private void xlRepMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_xlRepMenuItmActionPerformed
@@ -493,23 +497,70 @@ public class GuiJFrame extends javax.swing.JFrame
         });
     }//GEN-LAST:event_xlRepMenuItmActionPerformed
 
+    private void nodesListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nodesListMouseClicked
+        // TODO add your handling code here:
+        nodes = mNet.getTopoNodes();
+        
+        //if host clicked do nothing, if node clicked show interfaces, flows
+        if(isItemSelected(nodesList.getSelectedValue(),mNet.getNodesNoHosts()))
+        {
+            //enables get average traffic menu item
+            getUtilMenuItm.setEnabled(true);
+            
+            //shows node connectors/interfaces of node clicked
+            nodeConnectors = mNet.getNodeConIDs(nodesList.getSelectedValue());
+            printToJList(nodeConnectors,nodeConnectorsList);
+            
+            //show flows of node clicked
+            flows = mNet.getFlowIDs(nodesList.getSelectedValue(),tableTxtFld.getText());
+            printToJList(flows,flowsList);
+        }
+    }//GEN-LAST:event_nodesListMouseClicked
+
+    private void nodesListComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_nodesListComponentHidden
+        // TODO add your handling code here:
+    }//GEN-LAST:event_nodesListComponentHidden
+
+    private void nodeConnectorsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nodeConnectorsListMouseClicked
+        // TODO add your handling code here:
+        getInterTrafficMenuItm.setEnabled(true);
+    }//GEN-LAST:event_nodeConnectorsListMouseClicked
+
+    private void nodeConnectorsListComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_nodeConnectorsListComponentHidden
+        // TODO add your handling code here:
+    }//GEN-LAST:event_nodeConnectorsListComponentHidden
+
+    private void generalListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_generalListMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_generalListMouseClicked
+
+    private void generalListComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_generalListComponentHidden
+        // TODO add your handling code here:
+    }//GEN-LAST:event_generalListComponentHidden
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel connectionLabel;
+    private javax.swing.JMenuItem connectionMenuItm;
     private javax.swing.JLabel controllerIpLbl;
     private javax.swing.JTextField controllerIpTxtFld;
     private javax.swing.JMenuItem dropFlowsMenuItm;
+    private javax.swing.JList<String> flowsList;
     private javax.swing.JMenu flowsMenu;
-    private javax.swing.JMenuItem getFlowsMenuItm;
-    private javax.swing.JMenuItem getLinkTrafficMenuItm;
-    private javax.swing.JMenuItem getLinksMenuItm;
-    private javax.swing.JMenuItem getNodesMenuItm;
+    private javax.swing.JList<String> generalList;
+    private javax.swing.JMenuItem getInterTrafficMenuItm;
     private javax.swing.JMenuItem getUtilMenuItm;
-    private javax.swing.JMenuItem inspectFlowsMenuItm;
     private javax.swing.JMenuItem installFlowsMenuItm;
-    private javax.swing.JList<String> jList;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane;
-    private javax.swing.JMenu linksMenu;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JLabel nodeConnectorsLbl;
+    private javax.swing.JList<String> nodeConnectorsList;
+    private javax.swing.JLabel nodesLbl;
+    private javax.swing.JList<String> nodesList;
     private javax.swing.JPasswordField passwordFld;
     private javax.swing.JLabel passwordLbl;
     private javax.swing.JLabel portLbl;
@@ -518,6 +569,7 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JLabel tableLbl;
     private javax.swing.JTextField tableTxtFld;
     private javax.swing.JMenu topoMenu;
+    private javax.swing.JMenu trafficMenu;
     private javax.swing.JLabel usernameLbl;
     private javax.swing.JTextField usernameTxtFld;
     private javax.swing.JMenuItem xlRepMenuItm;

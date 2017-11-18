@@ -84,7 +84,7 @@ public class CreateExcelFromNet
                 for (int j = 0; j < nodeConIDs.length; j++)
                 {
                    nodeConnectorsList.add(nodeConIDs[j]);
-                   nodeConValuesList.add(net.getnNodeConValues(nodeConIDs[j],nodes[i]));
+                   nodeConValuesList.add(net.getNodeConValues(nodeConIDs[j],nodes[i]));
                 }                 
             }
             

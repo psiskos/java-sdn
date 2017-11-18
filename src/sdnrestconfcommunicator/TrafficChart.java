@@ -22,7 +22,7 @@ import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import static sdnrestconfcommunicator.PublicStatics.CONGESTION_THRESHOLD;
 import static sdnrestconfcommunicator.PublicStatics.NO_DRAW_THRESHOLD;
-import static sdnrestconfcommunicator.PublicStatics.REFRESH_TIMER;
+import static sdnrestconfcommunicator.PublicStatics.GRAPH_REFRESH_TIME;
 
 public class TrafficChart extends JFrame
 {
@@ -51,7 +51,7 @@ public class TrafficChart extends JFrame
    
    public void updateGraph(double trByt,double rcByt,int interfaceSpeed) 
    {       
-      double timeInSecs = REFRESH_TIMER * noDrawInterval;
+      double timeInSecs = GRAPH_REFRESH_TIME * noDrawInterval;
       double rateTr = (trByt - transByt)/timeInSecs;
       double rateRc = (rcByt - recByte)/timeInSecs;
       
@@ -74,8 +74,8 @@ public class TrafficChart extends JFrame
    
    public void updateDraw(double rateTrans,double rateRecv, double transmitted, double received)
    {
-        transBytes.add(REFRESH_TIMER * counter, rateTrans);
-        recBytes.add(REFRESH_TIMER * counter, rateRecv);
+        transBytes.add(GRAPH_REFRESH_TIME * counter, rateTrans);
+        recBytes.add(GRAPH_REFRESH_TIME * counter, rateRecv);
 
         //current bytes value is stored to be substracted from the next value
         transByt = transmitted;
