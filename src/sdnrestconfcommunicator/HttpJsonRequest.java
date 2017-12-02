@@ -48,23 +48,18 @@ public class HttpJsonRequest
             // Create Http connection
             connection = (HttpURLConnection) url
                     .openConnection();
-
-            // Set connection properties
-            
+            // Set connection properties           
             connection.setRequestMethod("PUT");
             connection.setRequestProperty("Content-Type", "application/json");
             connection.setRequestProperty("Accept", "application/json");
             connection.setRequestProperty("Authorization", "Basic "
                     + encodedAuthStr);
-            //connection.setUseCaches(false);
             connection.setDoInput(true);
-            connection.setDoOutput(true);
-            
+            connection.setDoOutput(true);           
             
             OutputStream out = connection.getOutputStream();
             out.write(flowString.getBytes("UTF-8"));
             callStatus = connection.getResponseCode();
-            
 
             
         } catch (Exception e) {

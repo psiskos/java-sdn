@@ -5,6 +5,8 @@
  */
 package sdnrestconfcommunicator;
 
+import org.codehaus.jettison.json.JSONObject;
+
 /**
  *
  * @author pas
@@ -44,5 +46,47 @@ public class PublicStatics
             timeFormatted = seconds + " seconds";
         return timeFormatted;
     }
+    
+    final static String queue = "{\n" +
+"  \"flow\": {\n" +
+"    \"id\": \"test\",\n" +
+"    \"instructions\": {\n" +
+"      \"instruction\": {\n" +
+"        \"order\": \"0\",\n" +
+"        \"apply-actions\": {\n" +
+"          \"action\": [\n" +
+"            {\n" +
+"              \"order\": \"1\",\n" +
+"              \"output-action\": {\n" +
+"                \"output-node-connector\": \"NORMAL\",\n" +
+"                \"max-length\": \"65535\"\n" +
+"              }\n" +
+"            },\n" +
+"            {\n" +
+"              \"order\": \"0\",\n" +
+"              \"set-queue-action\": { \"queue-id\": \"0\" }\n" +
+"            }\n" +
+"          ]\n" +
+"        }\n" +
+"      }\n" +
+"    },\n" +
+"    \"barrier\": \"true\",\n" +
+"    \"flow-name\": \"sdn_communicator_flow\",\n" +
+"    \"match\": {\n" +
+"      \"ethernet-match\": {\n" +
+"        \"ethernet-type\": { \"type\": \"2048\" }\n" +
+"      },\n" +
+"      \"ipv4-source\": \"0.0.0.0/0\",\n" +
+"      \"ipv4-destination\": \"0.0.0.0/0\",\n" +
+"      \"ip-match\": { \"ip-protocol\": \"6\" }\n" +
+"    },\n" +
+"    \"hard-timeout\": \"0\",\n" +
+"    \"priority\": \"20\",\n" +
+"    \"table_id\": \"0\",\n" +
+"    \"idle-timeout\": \"0\"\n" +
+"  }\n" +
+"}";
+    
+
     
 }

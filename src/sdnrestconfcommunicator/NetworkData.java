@@ -67,7 +67,7 @@ public class NetworkData
         
         //id,interface speed,uptime,mac,interface name,configuration,
         //transmitted,received,avg bps Tx,avg bps Rx
-        String[] nodeConValues = new String[9];
+        String[] nodeConValues = new String[17];
         
         nodeConValues[0] = String.valueOf(mNodeConnectorsPR.getNodeConInterSpeed());
         nodeConValues[1] = mNodeConnectorsPR.getNodeConSeconds();
@@ -88,6 +88,16 @@ public class NetworkData
         //avg received traffic in bytes/s of node connector
         nodeConValues[8] = new DecimalFormat("#.##").format(Double.parseDouble(nodeConValues[6])
                 /Integer.parseInt(nodeConValues[1]));
+        
+        //receive drops
+        nodeConValues[9] = mNodeConnectorsPR.getNodeConDropsAndErrors("receive-drops");
+        nodeConValues[10] = mNodeConnectorsPR.getNodeConDropsAndErrors("transmit-drops");
+        nodeConValues[11] = mNodeConnectorsPR.getNodeConDropsAndErrors("receive-errors");
+        nodeConValues[12] = mNodeConnectorsPR.getNodeConDropsAndErrors("transmit-errors");
+        nodeConValues[13] = mNodeConnectorsPR.getNodeConDropsAndErrors("receive-frame-error");
+        nodeConValues[14] = mNodeConnectorsPR.getNodeConDropsAndErrors("receive-over-run-error");
+        nodeConValues[15] = mNodeConnectorsPR.getNodeConDropsAndErrors("receive-crc-error");
+        nodeConValues[16] = mNodeConnectorsPR.getNodeConDropsAndErrors("collision-count");
         
         return nodeConValues;
     }

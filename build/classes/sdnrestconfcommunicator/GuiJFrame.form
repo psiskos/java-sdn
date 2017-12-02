@@ -59,13 +59,13 @@
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="dropFlowsMenuItmActionPerformed"/>
               </Events>
             </MenuItem>
-            <MenuItem class="javax.swing.JMenuItem" name="installFlowsMenuItm">
+            <MenuItem class="javax.swing.JMenuItem" name="setFlowsMenuItm">
               <Properties>
-                <Property name="text" type="java.lang.String" value="Install Flow"/>
+                <Property name="text" type="java.lang.String" value="Set Flow"/>
                 <Property name="enabled" type="boolean" value="false"/>
               </Properties>
               <Events>
-                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="installFlowsMenuItmActionPerformed"/>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="setFlowsMenuItmActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -82,6 +82,22 @@
               </Properties>
               <Events>
                 <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="xlRepMenuItmActionPerformed"/>
+              </Events>
+            </MenuItem>
+          </SubComponents>
+        </Menu>
+        <Menu class="javax.swing.JMenu" name="QosMenu">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Qos"/>
+          </Properties>
+          <SubComponents>
+            <MenuItem class="javax.swing.JMenuItem" name="addToQueueMenuItm">
+              <Properties>
+                <Property name="text" type="java.lang.String" value="Add to Queue"/>
+                <Property name="enabled" type="boolean" value="false"/>
+              </Properties>
+              <Events>
+                <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="addToQueueMenuItmActionPerformed"/>
               </Events>
             </MenuItem>
           </SubComponents>
@@ -210,9 +226,9 @@
                   <Component id="jScrollPane" min="-2" pref="241" max="-2" attributes="0"/>
                   <Component id="jScrollPane2" min="-2" pref="241" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <EmptySpace min="-2" pref="30" max="-2" attributes="0"/>
               <Component id="jScrollPane3" min="-2" pref="241" max="-2" attributes="0"/>
-              <EmptySpace pref="86" max="32767" attributes="0"/>
+              <EmptySpace pref="68" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>

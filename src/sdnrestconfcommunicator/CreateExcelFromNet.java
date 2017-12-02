@@ -17,7 +17,7 @@ public class CreateExcelFromNet
 {
     final private String fileName;
     final private NetworkData net;
-    final private static int MAX_NUMBER_OF_COLUMNS = 10;//used for autosize columns
+    final private static int MAX_NUMBER_OF_COLUMNS = 18;//used for autosize columns
     
     public CreateExcelFromNet(String fileName,NetworkData net)
     {
@@ -121,6 +121,14 @@ public class CreateExcelFromNet
             row.createCell(7).setCellValue("Received Bytes");
             row.createCell(8).setCellValue("Tx Bytes/Sec");
             row.createCell(9).setCellValue("Rx Bytes/Sec");
+            row.createCell(10).setCellValue("Received Drops");
+            row.createCell(11).setCellValue("Transmitted Drops");
+            row.createCell(12).setCellValue("Received Errors");
+            row.createCell(13).setCellValue("Transmitted Drops");
+            row.createCell(14).setCellValue("Received frame errors");
+            row.createCell(15).setCellValue("Received over run errors");
+            row.createCell(16).setCellValue("Received crc errors");
+            row.createCell(17).setCellValue("Collision count");
 
             styleToRow(row,boldStyle);           
             

@@ -11,20 +11,21 @@ import javax.swing.JOptionPane;
  *
  * @author pas
  */
-public class InstallFlowJFrame extends javax.swing.JFrame 
+public class SetFlowJFrame extends javax.swing.JFrame 
 {
 
-    private String elementUsedForFlows,username,password,controllerIp;//switch
+    private String node,username,password,controllerIp;
     HttpJsonRequest installFlowRequest;
     /**
      * Creates new form InstallFlowJFrame
      */
-    public InstallFlowJFrame(String elementUsedForFlows,String username, String password, String controllerIp) {
+    public SetFlowJFrame(String node,String username, String password, String controllerIp) {
         initComponents();
-        this.elementUsedForFlows = elementUsedForFlows;
+        this.node = node;
         this.username = username;
         this.password = password;
-        this.controllerIp= controllerIp;
+        this.controllerIp = controllerIp;
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
     }
 
     /**
@@ -118,15 +119,14 @@ public class InstallFlowJFrame extends javax.swing.JFrame
     private void installFlowBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installFlowBtnActionPerformed
         // TODO add your handling code here:
         installFlowRequest = new HttpJsonRequest();
-        String baseUrl = PublicStatics.CONFIG_NODE_CONNECTOR_URL + elementUsedForFlows +
+        String baseUrl = PublicStatics.CONFIG_NODE_CONNECTOR_URL + node +
                 "/table/" + tableValueTextFld.getText() +
                 "/flow/" + flowIdValueTxtFld.getText();
         if (installFlowRequest.putRestconfInJson(username, password, controllerIp, baseUrl, flowTextArea.getText()))
             JOptionPane.showMessageDialog(null, "Flow Installed Successfully!!");
         else
             JOptionPane.showMessageDialog(null, "Error... Code " + installFlowRequest.callStatus);
-        
-        
+             
             this.dispose();
         
     }//GEN-LAST:event_installFlowBtnActionPerformed

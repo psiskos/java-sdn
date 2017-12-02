@@ -231,6 +231,25 @@ public class ParseJsonReply
         return nodesConSeconds;
     }
     
+    protected String getNodeConDropsAndErrors(String typeOfError)
+    {
+        
+        String nodesConRecDrops = null;
+        try
+        {
+            JSONArray nodeCon = reply.getJSONArray("node-connector");
+            JSONObject obj = nodeCon.getJSONObject(0);
+            JSONObject obj1 = obj.getJSONObject("opendaylight-port-statistics:flow-capable-node-connector-statistics");           
+            JSONObject obj2 = obj1.getJSONObject("duration");
+
+            nodesConRecDrops = obj1.getString(typeOfError);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return nodesConRecDrops;
+    }
+    
     protected int getNodeConInterSpeed()
     {
         int interSpeed = 0;

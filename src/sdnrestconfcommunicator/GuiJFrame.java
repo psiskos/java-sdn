@@ -103,9 +103,11 @@ public class GuiJFrame extends javax.swing.JFrame
         getUtilMenuItm = new javax.swing.JMenuItem();
         flowsMenu = new javax.swing.JMenu();
         dropFlowsMenuItm = new javax.swing.JMenuItem();
-        installFlowsMenuItm = new javax.swing.JMenuItem();
+        setFlowsMenuItm = new javax.swing.JMenuItem();
         reportMenu = new javax.swing.JMenu();
         xlRepMenuItm = new javax.swing.JMenuItem();
+        QosMenu = new javax.swing.JMenu();
+        addToQueueMenuItm = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -241,14 +243,14 @@ public class GuiJFrame extends javax.swing.JFrame
         });
         flowsMenu.add(dropFlowsMenuItm);
 
-        installFlowsMenuItm.setText("Install Flow");
-        installFlowsMenuItm.setEnabled(false);
-        installFlowsMenuItm.addActionListener(new java.awt.event.ActionListener() {
+        setFlowsMenuItm.setText("Set Flow");
+        setFlowsMenuItm.setEnabled(false);
+        setFlowsMenuItm.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                installFlowsMenuItmActionPerformed(evt);
+                setFlowsMenuItmActionPerformed(evt);
             }
         });
-        flowsMenu.add(installFlowsMenuItm);
+        flowsMenu.add(setFlowsMenuItm);
 
         jMenuBar1.add(flowsMenu);
 
@@ -264,6 +266,19 @@ public class GuiJFrame extends javax.swing.JFrame
         reportMenu.add(xlRepMenuItm);
 
         jMenuBar1.add(reportMenu);
+
+        QosMenu.setText("Qos");
+
+        addToQueueMenuItm.setText("Add to Queue");
+        addToQueueMenuItm.setEnabled(false);
+        addToQueueMenuItm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addToQueueMenuItmActionPerformed(evt);
+            }
+        });
+        QosMenu.add(addToQueueMenuItm);
+
+        jMenuBar1.add(QosMenu);
 
         setJMenuBar(jMenuBar1);
 
@@ -348,9 +363,9 @@ public class GuiJFrame extends javax.swing.JFrame
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(30, 30, 30)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(86, Short.MAX_VALUE))
+                .addContainerGap(68, Short.MAX_VALUE))
         );
 
         pack();
@@ -394,7 +409,7 @@ public class GuiJFrame extends javax.swing.JFrame
         //is flow selected
         if(isItemSelected(flowsList.getSelectedValue(),flows) && isItemSelected(nodesList.getSelectedValue(),nodes))
         {
-            installFlowsMenuItm.setEnabled(true);
+            setFlowsMenuItm.setEnabled(true);
             dropFlowsMenuItm.setEnabled(true);
             tableLbl.setVisible(true);
             tableTxtFld.setVisible(true);
@@ -427,14 +442,14 @@ public class GuiJFrame extends javax.swing.JFrame
             JOptionPane.showMessageDialog(null, "Select a flow!!");      
     }//GEN-LAST:event_dropFlowsMenuItmActionPerformed
 
-    private void installFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installFlowsMenuItmActionPerformed
+    private void setFlowsMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setFlowsMenuItmActionPerformed
         // TODO add your handling code here:    
         if (isItemSelected(nodesList.getSelectedValue(),nodes))
-            new InstallFlowJFrame(flowsList.getSelectedValue(), mNet.username, mNet.password, mNet.controllerIp).setVisible(true);
+            new SetFlowJFrame(flowsList.getSelectedValue(), mNet.username, mNet.password, mNet.controllerIp).setVisible(true);
         else
             JOptionPane.showMessageDialog(null, "Select a node!!");
         
-    }//GEN-LAST:event_installFlowsMenuItmActionPerformed
+    }//GEN-LAST:event_setFlowsMenuItmActionPerformed
 
     private void getInterTrafficMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getInterTrafficMenuItmActionPerformed
         // TODO add your handling code here:
@@ -501,11 +516,14 @@ public class GuiJFrame extends javax.swing.JFrame
         // TODO add your handling code here:
         nodes = mNet.getTopoNodes();
         
-        //if host clicked do nothing, if node clicked show interfaces, flows
+        //if node clicked show interfaces, flows
         if(isItemSelected(nodesList.getSelectedValue(),mNet.getNodesNoHosts()))
         {
             //enables get average traffic menu item
             getUtilMenuItm.setEnabled(true);
+            
+            //enables get add to queue menu item
+            addToQueueMenuItm.setEnabled(true);
             
             //shows node connectors/interfaces of node clicked
             nodeConnectors = mNet.getNodeConIDs(nodesList.getSelectedValue());
@@ -515,6 +533,9 @@ public class GuiJFrame extends javax.swing.JFrame
             flows = mNet.getFlowIDs(nodesList.getSelectedValue(),tableTxtFld.getText());
             printToJList(flows,flowsList);
         }
+        //if host clicked,show mac,ip
+        else
+            printToJList(mNet.getHostValues(nodesList.getSelectedValue()),generalList);
     }//GEN-LAST:event_nodesListMouseClicked
 
     private void nodesListComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_nodesListComponentHidden
@@ -538,8 +559,18 @@ public class GuiJFrame extends javax.swing.JFrame
         // TODO add your handling code here:
     }//GEN-LAST:event_generalListComponentHidden
 
+    private void addToQueueMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addToQueueMenuItmActionPerformed
+        // TODO add your handling code here:
+        if (isItemSelected(nodesList.getSelectedValue(),nodes))
+            new SetQueueFlowJFrame(nodesList.getSelectedValue(), mNet.username, mNet.password, mNet.controllerIp).setVisible(true);
+        else
+            JOptionPane.showMessageDialog(null, "Select a node!!");
+    }//GEN-LAST:event_addToQueueMenuItmActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JMenu QosMenu;
+    private javax.swing.JMenuItem addToQueueMenuItm;
     private javax.swing.JLabel connectionLabel;
     private javax.swing.JMenuItem connectionMenuItm;
     private javax.swing.JLabel controllerIpLbl;
@@ -550,7 +581,6 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JList<String> generalList;
     private javax.swing.JMenuItem getInterTrafficMenuItm;
     private javax.swing.JMenuItem getUtilMenuItm;
-    private javax.swing.JMenuItem installFlowsMenuItm;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JScrollPane jScrollPane;
@@ -566,6 +596,7 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JLabel portLbl;
     private javax.swing.JTextField portTxtFld;
     private javax.swing.JMenu reportMenu;
+    private javax.swing.JMenuItem setFlowsMenuItm;
     private javax.swing.JLabel tableLbl;
     private javax.swing.JTextField tableTxtFld;
     private javax.swing.JMenu topoMenu;
