@@ -8,6 +8,7 @@ package sdnrestconfcommunicator;
 import javax.swing.JOptionPane;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONObject;
+import static sdnrestconfcommunicator.PublicStatics.priorityQueues;
 import static sdnrestconfcommunicator.PublicStatics.queue;
 
 /**
@@ -268,7 +269,11 @@ public class SetQueueFlowJFrame extends javax.swing.JFrame {
                     "/table/0" +
                     "/flow/" + flowId;
             if (installQueueFlowRequest.putRestconfInJson(username, password, controllerIp, baseUrl, queueData))
+            {
                 JOptionPane.showMessageDialog(null, "Flow Installed Successfully!!");
+                String[] qDataNameToList = {flowId, queueData};
+                priorityQueues.add(qDataNameToList);
+            }
             else
                 JOptionPane.showMessageDialog(null, "Error... Code " + installQueueFlowRequest.callStatus);
 

@@ -5,6 +5,8 @@
  */
 package sdnrestconfcommunicator;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.codehaus.jettison.json.JSONObject;
 
 /**
@@ -21,10 +23,10 @@ public class PublicStatics
     
     //global static vars
     final public static long GRAPH_REFRESH_TIME = 1;//seconds
-    final public static long CONNECTION_REFRESH_TIME = 30;//seconds
+    final public static long CONNECTION_REFRESH_TIME = 100;//seconds
     //times that thread waits before drawing if rates are 0
     final public static long NO_DRAW_THRESHOLD = 3;
-    final public static double CONGESTION_THRESHOLD = 85;//percentage
+    final public static double CONGESTION_THRESHOLD = 90;//percentage
     
     public static String formatSeconds(int seconds)
     {
@@ -46,6 +48,9 @@ public class PublicStatics
             timeFormatted = seconds + " seconds";
         return timeFormatted;
     }
+    
+    public static ArrayList<String[]> priorityQueues = new ArrayList<String[]>();
+    
     
     final static String queue = "{\n" +
 "  \"flow\": {\n" +
@@ -87,6 +92,46 @@ public class PublicStatics
 "  }\n" +
 "}";
     
-
+    final static String queueMonitor = "{\n" +
+"  \"flow\": {\n" +
+"    \"id\": \"monitor\",\n" +
+"    \"instructions\": {\n" +
+"      \"instruction\": {\n" +
+"        \"order\": \"0\",\n" +
+"        \"apply-actions\": {\n" +
+"          \"action\": [\n" +
+"            {\n" +
+"              \"order\": \"1\",\n" +
+"              \"output-action\": {\n" +
+"                \"output-node-connector\": \"NORMAL\",\n" +
+"                \"max-length\": \"65535\"\n" +
+"              }\n" +
+"            },\n" +
+"            {\n" +
+"              \"order\": \"0\",\n" +
+"              \"set-queue-action\": { \"queue-id\": \"2\" }\n" +
+"            }\n" +
+"          ]\n" +
+"        }\n" +
+"      }\n" +
+"    },\n" +
+"    \"barrier\": \"true\",\n" +
+"    \"flow-name\": \"sdn_communicator_flow\",\n" +
+"    \"match\": {\n" +
+"      \"ethernet-match\": {\n" +
+"        \"ethernet-type\": { \"type\": \"2048\" }\n" +
+"      },\n" +
+"      \"ipv4-source\": \"10.0.0.2/32\",\n" +
+"      \"ipv4-destination\": \"10.0.0.1/32\",\n" +
+"      \"ip-match\": { \"ip-protocol\": \"6\" }\n" +
+"    },\n" +
+"    \"hard-timeout\": \"100\",\n" +
+"    \"priority\": \"20\",\n" +
+"    \"table_id\": \"0\",\n" +
+"    \"idle-timeout\": \"0\"\n" +
+"  }\n" +
+"}";
     
+
+    public static String[] defaultQueue = {"default",queueMonitor};
 }

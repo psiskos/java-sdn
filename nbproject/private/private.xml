@@ -4,8 +4,8 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/CreateExcelFromNet.java</file>
+            <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/PublicStatics.java</file>
             <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/NetworkData.java</file>
-            <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/SetQueueFlowJFrame.java</file>
             <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/ParseJsonReply.java</file>
             <file>file:/home/pas/NetBeansProjects/SdnRestconfCommunicator/src/sdnrestconfcommunicator/GuiJFrame.java</file>
         </group>

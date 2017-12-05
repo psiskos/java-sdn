@@ -13,8 +13,12 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import static sdnrestconfcommunicator.PublicStatics.CONGESTION_THRESHOLD;
 import static sdnrestconfcommunicator.PublicStatics.CONNECTION_REFRESH_TIME;
 import static sdnrestconfcommunicator.PublicStatics.GRAPH_REFRESH_TIME;
+import static sdnrestconfcommunicator.PublicStatics.defaultQueue;
+import static sdnrestconfcommunicator.PublicStatics.priorityQueues;
+import static sdnrestconfcommunicator.PublicStatics.queueMonitor;
 
 /**
  *
@@ -26,6 +30,8 @@ public class GuiJFrame extends javax.swing.JFrame
     NetworkData mNet;
     String selectedNode = null,selectedNodeConnector;
     String[] nodes,flows,nodeConnectors;
+    double bytesTr,tmp;
+    ScheduledExecutorService monitorTrafficExecutor;
     /**
      * Creates new form GuiJFrame
      */
@@ -108,6 +114,8 @@ public class GuiJFrame extends javax.swing.JFrame
         xlRepMenuItm = new javax.swing.JMenuItem();
         QosMenu = new javax.swing.JMenu();
         addToQueueMenuItm = new javax.swing.JMenuItem();
+        monitEnMenuItm = new javax.swing.JMenuItem();
+        monitDisMenuItm = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -278,6 +286,24 @@ public class GuiJFrame extends javax.swing.JFrame
         });
         QosMenu.add(addToQueueMenuItm);
 
+        monitEnMenuItm.setText("Enable Monitor");
+        monitEnMenuItm.setEnabled(false);
+        monitEnMenuItm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                monitEnMenuItmActionPerformed(evt);
+            }
+        });
+        QosMenu.add(monitEnMenuItm);
+
+        monitDisMenuItm.setText("Disable Monitor");
+        monitDisMenuItm.setEnabled(false);
+        monitDisMenuItm.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                monitDisMenuItmActionPerformed(evt);
+            }
+        });
+        QosMenu.add(monitDisMenuItm);
+
         jMenuBar1.add(QosMenu);
 
         setJMenuBar(jMenuBar1);
@@ -373,10 +399,10 @@ public class GuiJFrame extends javax.swing.JFrame
 
     private void connectionMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_connectionMenuItmActionPerformed
         // TODO add your handling code here:
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-            Runnable updateRunnable = new Runnable() 
+        //ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+            //Runnable updateRunnable = new Runnable() 
             {
-                public void run() 
+                //public void run() 
                 {
                     mNet = new NetworkData(usernameTxtFld.getText(),
                     new String(passwordFld.getPassword()),
@@ -397,7 +423,7 @@ public class GuiJFrame extends javax.swing.JFrame
                 }
             };            
             
-            executor.scheduleAtFixedRate(updateRunnable, 0,CONNECTION_REFRESH_TIME, TimeUnit.SECONDS);       
+            //executor.scheduleAtFixedRate(updateRunnable, 0,CONNECTION_REFRESH_TIME, TimeUnit.SECONDS);       
     }//GEN-LAST:event_connectionMenuItmActionPerformed
 
     private void flowsListComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_flowsListComponentHidden
@@ -545,6 +571,7 @@ public class GuiJFrame extends javax.swing.JFrame
     private void nodeConnectorsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_nodeConnectorsListMouseClicked
         // TODO add your handling code here:
         getInterTrafficMenuItm.setEnabled(true);
+        monitEnMenuItm.setEnabled(true);
     }//GEN-LAST:event_nodeConnectorsListMouseClicked
 
     private void nodeConnectorsListComponentHidden(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_nodeConnectorsListComponentHidden
@@ -567,6 +594,67 @@ public class GuiJFrame extends javax.swing.JFrame
             JOptionPane.showMessageDialog(null, "Select a node!!");
     }//GEN-LAST:event_addToQueueMenuItmActionPerformed
 
+    private void monitEnMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitEnMenuItmActionPerformed
+        // TODO add your handling code here:
+        priorityQueues.add(defaultQueue);
+        int monitorTimer = 10;//seconds
+        
+        if(isItemSelected(nodeConnectorsList.getSelectedValue(),nodeConnectors))
+        {
+            if(isItemSelected(nodesList.getSelectedValue(),nodes))
+            {
+                monitDisMenuItm.setEnabled(true);
+                monitEnMenuItm.setEnabled(false);
+                
+                //double interBandwidth = mNet.getNodeConInterSpeed(nodeConnectorsList.getSelectedValue(), nodesList.getSelectedValue());
+                double threshold = 13500000;//Bytes/s
+                //System.out.println("Threshold is " + threshold);                              
+                
+                String[] traRecBytesArray = mNet.getNodeConBytes(nodeConnectorsList.getSelectedValue(),nodesList.getSelectedValue());
+                tmp = Double.parseDouble(traRecBytesArray[0]);
+                
+                String nodeConnector = nodeConnectorsList.getSelectedValue();
+                String node = nodesList.getSelectedValue();
+                
+                monitorTrafficExecutor = Executors.newScheduledThreadPool(1);
+                Runnable monitorRunnable = new Runnable() 
+                {
+                    public void run() 
+                    {
+                        String[] traRecBytesArray = mNet.getNodeConBytes(nodeConnector,node);
+                        //System.out.println("Tr bytes: " + traRecBytesArray[0]);
+                        System.out.println("Node Connector: " + nodeConnector);
+                        
+                        bytesTr = (Double.parseDouble(traRecBytesArray[0]) - tmp)/monitorTimer;
+                        tmp = Double.parseDouble(traRecBytesArray[0]);
+                        System.out.println(bytesTr);
+                        if(bytesTr > threshold)
+                        {    
+                            String baseUrl = PublicStatics.CONFIG_NODE_CONNECTOR_URL + node +
+                            "/table/0" +
+                            "/flow/" + "monitor";
+                            HttpJsonRequest installQueueFlowRequest = new HttpJsonRequest();
+                            installQueueFlowRequest.putRestconfInJson(mNet.username, mNet.password, 
+                                    mNet.controllerIp, baseUrl, queueMonitor);
+                            //JOptionPane.showMessageDialog(null, "Link Congestion!!");
+                        }
+                    }
+                };            
+                monitorTrafficExecutor.scheduleAtFixedRate(monitorRunnable, 0, monitorTimer, TimeUnit.SECONDS);
+                
+            }
+            else
+                JOptionPane.showMessageDialog(null, "Select a node!!");
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Select an interface!!");
+    }//GEN-LAST:event_monitEnMenuItmActionPerformed
+
+    private void monitDisMenuItmActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitDisMenuItmActionPerformed
+        // TODO add your handling code here:
+        monitorTrafficExecutor.shutdown();
+    }//GEN-LAST:event_monitDisMenuItmActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu QosMenu;
@@ -587,6 +675,8 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JMenuItem monitDisMenuItm;
+    private javax.swing.JMenuItem monitEnMenuItm;
     private javax.swing.JLabel nodeConnectorsLbl;
     private javax.swing.JList<String> nodeConnectorsList;
     private javax.swing.JLabel nodesLbl;
