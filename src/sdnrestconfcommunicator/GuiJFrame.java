@@ -11,6 +11,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JCheckBox;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -32,7 +33,6 @@ public class GuiJFrame extends javax.swing.JFrame
     NetworkData mNet;
     String selectedNode = null,selectedNodeConnector;
     String[] nodes,flows,nodeConnectors;
-    double bytesTrDifference,tmp;
     /**
      * Creates new form GuiJFrame
      */
@@ -109,6 +109,15 @@ public class GuiJFrame extends javax.swing.JFrame
         forLbl = new javax.swing.JLabel();
         secondsTextFld = new javax.swing.JTextField();
         monitorChbx = new javax.swing.JCheckBox();
+        secLbl1 = new javax.swing.JLabel();
+        appFlowLbl1 = new javax.swing.JLabel();
+        monitorFlowsCmbx1 = new javax.swing.JComboBox<>();
+        thresholdLbl1 = new javax.swing.JLabel();
+        thresholdTextFld1 = new javax.swing.JTextField();
+        kbpsLbl1 = new javax.swing.JLabel();
+        forLbl1 = new javax.swing.JLabel();
+        secondsTextFld1 = new javax.swing.JTextField();
+        monitorChbx1 = new javax.swing.JCheckBox();
         jMenuBar1 = new javax.swing.JMenuBar();
         topoMenu = new javax.swing.JMenu();
         connectionMenuItm = new javax.swing.JMenuItem();
@@ -236,6 +245,34 @@ public class GuiJFrame extends javax.swing.JFrame
         monitorChbx.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 monitorChbxActionPerformed(evt);
+            }
+        });
+
+        secLbl1.setText("seconds");
+
+        appFlowLbl1.setText("Apply flow");
+
+        monitorFlowsCmbx1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "q1", "q2", "q3" }));
+        monitorFlowsCmbx1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                monitorFlowsCmbx1ActionPerformed(evt);
+            }
+        });
+
+        thresholdLbl1.setText("Tr Exceeds");
+
+        thresholdTextFld1.setText("100000");
+
+        kbpsLbl1.setText("Kbps");
+
+        forLbl1.setText("For ");
+
+        secondsTextFld1.setText("10");
+
+        monitorChbx1.setText("Monitor Enable/Disable");
+        monitorChbx1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                monitorChbx1ActionPerformed(evt);
             }
         });
 
@@ -391,8 +428,29 @@ public class GuiJFrame extends javax.swing.JFrame
                                             .addComponent(monitorFlowsCmbx, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                                         .addGap(20, 20, 20))
                                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                        .addComponent(monitorChbx, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(32, 32, 32))))))))
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addComponent(forLbl1, javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(thresholdLbl1, javax.swing.GroupLayout.Alignment.TRAILING)
+                                                        .addComponent(appFlowLbl1, javax.swing.GroupLayout.Alignment.TRAILING))
+                                                    .addGap(18, 18, 18)
+                                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                        .addGroup(layout.createSequentialGroup()
+                                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                                                .addComponent(thresholdTextFld1)
+                                                                .addComponent(secondsTextFld1, javax.swing.GroupLayout.PREFERRED_SIZE, 58, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                                                .addComponent(kbpsLbl1)
+                                                                .addComponent(secLbl1)))
+                                                        .addComponent(monitorFlowsCmbx1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                                    .addComponent(monitorChbx1, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                    .addGap(12, 12, 12)))
+                                            .addComponent(monitorChbx, javax.swing.GroupLayout.PREFERRED_SIZE, 208, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addGap(17, 17, 17))))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -447,7 +505,23 @@ public class GuiJFrame extends javax.swing.JFrame
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 241, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(thresholdLbl1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(thresholdTextFld1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(kbpsLbl1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(forLbl1, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(secondsTextFld1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(secLbl1))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(appFlowLbl1, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(monitorFlowsCmbx1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(monitorChbx1)))
                 .addGap(18, 18, 18)
                 .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(62, Short.MAX_VALUE))
@@ -655,21 +729,20 @@ public class GuiJFrame extends javax.swing.JFrame
 
     private void monitorChbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitorChbxActionPerformed
         // TODO add your handling code here:
-        ScheduledExecutorService monitorTrafficExecutor;
-        monitorTrafficExecutor = Executors.newScheduledThreadPool(1);
-
+        MonitorScheduledExecutorService mScheduledThread;
         if(isItemSelected(nodeConnectorsList.getSelectedValue(),nodeConnectors) && isItemSelected(nodesList.getSelectedValue(),nodes))
         {      
             if(monitorChbx.isSelected())
             {
-                int monitorTimer = Integer.parseInt(secondsTextFld.getText());
-                int queueId = monitorFlowsCmbx.getSelectedIndex();
-                double threshold = Double.parseDouble(thresholdTextFld.getText());
-                String flowId = monitorFlowsCmbx.getSelectedItem().toString();
-                
-                startExecutor(monitorTrafficExecutor,monitorTimer, queueId,threshold ,
-                        nodeConnectorsList.getSelectedValue(),nodesList.getSelectedValue(),
-                        flowId);
+                mScheduledThread = new MonitorScheduledExecutorService(
+                            nodeConnectorsList.getSelectedValue(),
+                            nodesList.getSelectedValue(),
+                            monitorFlowsCmbx.getSelectedItem().toString(),//flowId
+                            monitorChbx,
+                            Integer.parseInt(secondsTextFld.getText()),//monitorTimer
+                            monitorFlowsCmbx.getSelectedIndex(),//queueId
+                            Double.parseDouble(thresholdTextFld.getText()),//thresholdByuser  
+                            mNet);
             }
         }
         else if(monitorChbx.isSelected())
@@ -677,64 +750,48 @@ public class GuiJFrame extends javax.swing.JFrame
             JOptionPane.showMessageDialog(null, "Select a node and an interface!!");
             monitorChbx.setSelected(false);
         }
-        
     }//GEN-LAST:event_monitorChbxActionPerformed
 
     private void monitorFlowsCmbxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitorFlowsCmbxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_monitorFlowsCmbxActionPerformed
 
-    public void startExecutor(ScheduledExecutorService mExec,int monitorTimer, int queueId,double thresholdByUser,
-            String nodeConnector,String node,String flowId)
-    {
-        String[] traRecBytesArray = mNet.getNodeConBytes(nodeConnector,node);
-        tmp = Double.parseDouble(traRecBytesArray[0]);
+    private void monitorFlowsCmbx1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitorFlowsCmbx1ActionPerformed
+        // TODO add your handling code here:
         
-        double threshold = thresholdByUser * 125; // * 1000 /8
-        System.out.println("Threshold: " + threshold);
-        
-        Runnable monitorRunnable = new Runnable() 
-        {
-            public void run() 
-            {
-                if(!monitorChbx.isSelected())
-                    mExec.shutdown();
-                
-                String[] traRecBytesArray = mNet.getNodeConBytes(nodeConnector,node);
-                System.out.println("Tr bytes: " + traRecBytesArray[0]);
-                //System.out.println("Node Connector: " + nodeConnector);            
+    }//GEN-LAST:event_monitorFlowsCmbx1ActionPerformed
 
-                bytesTrDifference = (Double.parseDouble(traRecBytesArray[0]) - tmp)/monitorTimer;
-                tmp = Double.parseDouble(traRecBytesArray[0]);
-                System.out.println(bytesTrDifference);
-                if(bytesTrDifference > threshold)
-                {  
-                    JOptionPane.showMessageDialog(null, "Link Congestion!!");
-                    String baseUrl = PublicStatics.CONFIG_NODE_CONNECTOR_URL + node +
-                            "/table/0" +
-                            //gets selected item name as flowId
-                            "/flow/" + flowId;
-                    HttpJsonRequest installMonitorFlowRequest = new HttpJsonRequest();
-                    //after timeout flow is removed from switch but not from controller
-                    //flow is first deleted and then installed
-                    installMonitorFlowRequest.deleteRestconfInJson(mNet.username, mNet.password, 
-                            mNet.controllerIp, baseUrl);
-                    installMonitorFlowRequest.putRestconfInJson(mNet.username, mNet.password, 
-                            mNet.controllerIp, baseUrl, 
-                            //if the first item from combobox is selected, then it gets the first item from priorityQueues
-                            priorityQueues.get(queueId));
-                    //JOptionPane.showMessageDialog(null, installQueueFlowRequest.callStatus);
-                }
+    private void monitorChbx1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_monitorChbx1ActionPerformed
+        // TODO add your handling code here:
+        MonitorScheduledExecutorService mScheduledThread;
+        if(isItemSelected(nodeConnectorsList.getSelectedValue(),nodeConnectors) && isItemSelected(nodesList.getSelectedValue(),nodes))
+        {      
+            if(monitorChbx1.isSelected())
+            {
+                mScheduledThread = new MonitorScheduledExecutorService(
+                            nodeConnectorsList.getSelectedValue(),
+                            nodesList.getSelectedValue(),
+                            monitorFlowsCmbx1.getSelectedItem().toString(),//flowId
+                            monitorChbx1,
+                            Integer.parseInt(secondsTextFld1.getText()),//monitorTimer
+                            monitorFlowsCmbx1.getSelectedIndex(),//queueId
+                            Double.parseDouble(thresholdTextFld1.getText()),//thresholdByuser  
+                            mNet);
             }
-        };                            
-        mExec.scheduleAtFixedRate(monitorRunnable, 0, monitorTimer, TimeUnit.SECONDS);                
-    
-    }
+        }
+        else if(monitorChbx1.isSelected())
+        {
+            JOptionPane.showMessageDialog(null, "Select a node and an interface!!");
+            monitorChbx1.setSelected(false);
+        }
+    }//GEN-LAST:event_monitorChbx1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenu QosMenu;
     private javax.swing.JMenuItem addToQueueMenuItm;
     private javax.swing.JLabel appFlowLbl;
+    private javax.swing.JLabel appFlowLbl1;
     private javax.swing.JLabel connectionLabel;
     private javax.swing.JMenuItem connectionMenuItm;
     private javax.swing.JLabel controllerIpLbl;
@@ -743,6 +800,7 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JList<String> flowsList;
     private javax.swing.JMenu flowsMenu;
     private javax.swing.JLabel forLbl;
+    private javax.swing.JLabel forLbl1;
     private javax.swing.JList<String> generalList;
     private javax.swing.JMenuItem getInterTrafficMenuItm;
     private javax.swing.JMenuItem getUtilMenuItm;
@@ -753,8 +811,11 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel kbpsLbl;
+    private javax.swing.JLabel kbpsLbl1;
     private javax.swing.JCheckBox monitorChbx;
+    private javax.swing.JCheckBox monitorChbx1;
     private javax.swing.JComboBox<String> monitorFlowsCmbx;
+    private javax.swing.JComboBox<String> monitorFlowsCmbx1;
     private javax.swing.JLabel nodeConnectorsLbl;
     private javax.swing.JList<String> nodeConnectorsList;
     private javax.swing.JLabel nodesLbl;
@@ -765,12 +826,16 @@ public class GuiJFrame extends javax.swing.JFrame
     private javax.swing.JTextField portTxtFld;
     private javax.swing.JMenu reportMenu;
     private javax.swing.JLabel secLbl;
+    private javax.swing.JLabel secLbl1;
     private javax.swing.JTextField secondsTextFld;
+    private javax.swing.JTextField secondsTextFld1;
     private javax.swing.JMenuItem setFlowsMenuItm;
     private javax.swing.JLabel tableLbl;
     private javax.swing.JTextField tableTxtFld;
     private javax.swing.JLabel thresholdLbl;
+    private javax.swing.JLabel thresholdLbl1;
     private javax.swing.JTextField thresholdTextFld;
+    private javax.swing.JTextField thresholdTextFld1;
     private javax.swing.JMenu topoMenu;
     private javax.swing.JMenu trafficMenu;
     private javax.swing.JLabel usernameLbl;

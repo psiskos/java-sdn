@@ -27,7 +27,7 @@ public class PublicStatics
     final public static long CONNECTION_REFRESH_TIME = 100;//seconds
     //times that thread waits before drawing if rates are 0
     final public static long NO_DRAW_THRESHOLD = 3;
-    final public static double CONGESTION_THRESHOLD = 90;//percentage
+    final public static double CONGESTION_THRESHOLD = 85;//percentage
     
     public static String formatSeconds(int seconds)
     {
